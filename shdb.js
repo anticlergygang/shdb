@@ -68,9 +68,7 @@ exports.initDBPromise = (path, conf) => {
                     for (let i = 0; i < pathSplit.length - 2; i++) {
                         pathSplit.splice(-1);
                         if (conf.ignoreList.indexOf(pathSplit.join('/')) !== -1) {
-                            console.log(`${file} should be ignored.`);
                         } else {
-                            console.log(`${file} should be servable.`);
                             database.servableFiles.push(file);
                         }
                     }
