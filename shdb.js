@@ -56,7 +56,7 @@ const statPromise = path => {
         });
     });
 };
-exports.initDBPromise = (path, conf) => {
+exports.initDBPromise = (path, conf = {}) => {
     return new Promise((resolve, reject) => {
         let database = {
             'servableFiles': []
@@ -67,8 +67,7 @@ exports.initDBPromise = (path, conf) => {
                     let pathSplit = file.path.split('/');
                     for (let i = 0; i < pathSplit.length - 2; i++) {
                         pathSplit.splice(-1);
-                        if (conf.ignoreList.indexOf(pathSplit.join('/')) !== -1) {
-                        } else {
+                        if (conf.ignoreList.indexOf(pathSplit.join('/')) !== -1) {} else {
                             database.servableFiles.push(file);
                         }
                     }
