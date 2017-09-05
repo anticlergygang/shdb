@@ -56,10 +56,31 @@ const statPromise = path => {
         });
     });
 };
-exports.initDBPromise = (path) => {
+exports.initDBPromise = (path, conf) => {
     return new Promise((resolve, reject) => {
+        let database = {
+            'servableFiles': []
+        };
         readdirRecursivePromise(path).then(files => {
-            resolve(files);
+            if (Object.keys(conf).indexOf('ignoreList') !== -1) {
+                files.forEach((file, i) => {
+                    let pathSplit = file.path.split('/');
+                    for (let i = 0; i < pathSplit.length - 2; i++) {
+                        pathSplit.splice(-1);
+                        if (conf.ignoreList.indexOf(pathSplit.join('/')) !== -1) {
+                            console.log(`${file} should be ignored.`);
+                        } else {
+                            console.log(`${file} should be servable.`);
+                            database.servableFiles.push(file);
+                        }
+                    }
+                });
+            } else {
+                files.forEach((file, i) => {
+                    database.servableFiles.push(file);
+                });
+            }
+            resolve(database);
         }).catch(err => {
             reject(err);
         });
