@@ -34,38 +34,37 @@ const readdirRecursivePromise = path => {
 };
 const statPromise = path => {
     return new Promise((resolve, reject) => {
-        fs.stat(path, (err, stats) => {
-            if (err) {
-                reject(err);
-            } else {
-                if (stats.isDirectory()) {
-                    readdirRecursivePromise(path).then(out => {
-                        resolve(out);
-                    }).catch(err => {
+            fs.stat(path, (err, stats) => {
+                    if (err) {
                         reject(err);
-                    });
-                } else if (stats.isFile()) {
-                    fs.readFile(path, (err, data) => {
-                        if (err) {
-                            reject(err);
-                        } else {
-                            resolve({
-                                {
-                                    'path': path,
-                                    'type': mime.lookup(path),
-                                    'data': data
+                    } else {
+                        if (stats.isDirectory()) {
+                            readdirRecursivePromise(path).then(out => {
+                                resolve(out);
+                            }).catch(err => {
+                                reject(err);
+                            });
+                        } else if (stats.isFile()) {
+                            fs.readFile(path, (err, data) => {
+                                    if (err) {
+                                        reject(err);
+                                    } else {
+                                        resolve({
+                                                'path': path,
+                                                'type': mime.lookup(path),
+                                                'data': data
+                                            }
+                                        });
                                 }
                             });
-                        }
-                    });
-                } else {
-                    reject(`Error parsing path: ${path}`);
+                    } else {
+                        reject(`Error parsing path: ${path}`);
+                    }
                 }
-            }
-        });
+            });
     });
 };
-exports.initDBPromise = (path, conf = {}) => {
+exports.initDBPromise = (path) => {
     return new Promise((resolve, reject) => {
         readdirRecursivePromise(path).then(files => {
             resolve(files);
