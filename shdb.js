@@ -20,8 +20,8 @@ const readdirRecursivePromise = path => {
                 if (directoriesPaths.indexOf('.DS_Store') != -1) {
                     directoriesPaths.splice(directoriesPaths.indexOf('.DS_Store'), 1);
                 }
-                directoriesPaths.forEach((e, i) => {
-                    directoriesPaths[i] = statPromise(`${path}/${e}`);
+                directoriesPaths.forEach((newPath, newPathIndex) => {
+                    directoriesPaths[newPathIndex] = statPromise(`${path}/${newPath}`);
                 });
                 Promise.all(directoriesPaths).then(out => {
                     resolve(flattenArray(out));
@@ -66,22 +66,22 @@ const statPromise = path => {
 exports.initDBPromise = (path, conf = {}) => {
     return new Promise((resolve, reject) => {
         let database = {
-            'servableFiles': []
+            'staticResponses': []
         };
         readdirRecursivePromise(path).then(files => {
             if (Object.keys(conf).indexOf('ignoreList') !== -1) {
-                files.forEach((file, i) => {
+                files.forEach((file, fileIndex) => {
                     let pathSplit = file.path.split('/');
                     for (let i = 0; i < pathSplit.length - 2; i++) {
                         pathSplit.splice(-1);
                         if (conf.ignoreList.indexOf(pathSplit.join('/')) !== -1) {} else {
-                            database.servableFiles.push(file);
+                            database.staticResponses.push(file);
                         }
                     }
                 });
             } else {
-                files.forEach((file, i) => {
-                    database.servableFiles.push(file);
+                files.forEach((file, fileIndex) => {
+                    database.staticResponses.push(file);
                 });
             }
             resolve(database);
