@@ -66,7 +66,7 @@ const statPromise = path => {
 exports.initDBPromise = (path, conf = {}) => {
     return new Promise((resolve, reject) => {
         let database = {
-            'staticResponses': []
+            'files': []
         };
         readdirRecursivePromise(path).then(files => {
             if (Object.keys(conf).indexOf('ignoreList') !== -1) {
@@ -75,13 +75,13 @@ exports.initDBPromise = (path, conf = {}) => {
                     for (let i = 0; i < pathSplit.length - 2; i++) {
                         pathSplit.splice(-1);
                         if (conf.ignoreList.indexOf(pathSplit.join('/')) !== -1) {} else {
-                            database.staticResponses.push(file);
+                            database.files.push(file);
                         }
                     }
                 });
             } else {
                 files.forEach((file, fileIndex) => {
-                    database.staticResponses.push(file);
+                    database.files.push(file);
                 });
             }
             resolve(database);
