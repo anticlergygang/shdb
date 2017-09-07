@@ -50,7 +50,8 @@ const statPromise = path => {
                             reject(err);
                         } else {
                             resolve({
-                                path: {
+                                {
+                                    'path': path,
                                     'type': mime.lookup(path),
                                     'data': data
                                 }
