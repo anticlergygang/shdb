@@ -50,9 +50,10 @@ const statPromise = path => {
                             reject(err);
                         } else {
                             resolve({
-                                'path': path,
-                                'type': mime.lookup(path),
-                                'data': data
+                                path: {
+                                    'type': mime.lookup(path),
+                                    'data': data
+                                }
                             });
                         }
                     });
@@ -65,26 +66,8 @@ const statPromise = path => {
 };
 exports.initDBPromise = (path, conf = {}) => {
     return new Promise((resolve, reject) => {
-        let database = {
-            'files': []
-        };
         readdirRecursivePromise(path).then(files => {
-            if (Object.keys(conf).indexOf('ignoreList') !== -1) {
-                files.forEach((file, fileIndex) => {
-                    let pathSplit = file.path.split('/');
-                    for (let i = 0; i < pathSplit.length - 2; i++) {
-                        pathSplit.splice(-1);
-                        if (conf.ignoreList.indexOf(pathSplit.join('/')) !== -1) {} else {
-                            database.files.push(file);
-                        }
-                    }
-                });
-            } else {
-                files.forEach((file, fileIndex) => {
-                    database.files.push(file);
-                });
-            }
-            resolve(database);
+            resolve(files);
         }).catch(err => {
             reject(err);
         });
