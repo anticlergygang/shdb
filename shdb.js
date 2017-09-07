@@ -45,7 +45,7 @@ const statPromise = path => {
                         reject(err);
                     });
                 } else if (stats.isFile()) {
-                    fs.readFile((err, data) => {
+                    fs.readFile(path, (err, data) => {
                         if (err) {
                             reject(err);
                         } else {
