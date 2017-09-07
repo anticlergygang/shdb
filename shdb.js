@@ -45,9 +45,16 @@ const statPromise = path => {
                         reject(err);
                     });
                 } else if (stats.isFile()) {
-                    resolve({
-                        'path': path,
-                        'type': mime.lookup(path)
+                    fs.readFile((err, data) => {
+                        if (err) {
+                            reject(err);
+                        } else {
+                            resolve({
+                                'path': path,
+                                'type': mime.lookup(path),
+                                'data': data
+                            });
+                        }
                     });
                 } else {
                     reject(`Error parsing path: ${path}`);
