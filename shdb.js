@@ -69,8 +69,17 @@ const statPromise = path => {
 };
 exports.initDBPromise = path => {
     return new Promise((resolve, reject) => {
+        let database = {
+            'files': {}
+        };
         readdirRecursivePromise(path).then(files => {
-            resolve(files);
+            files.forEach((file, i) => {
+                database['files'][file.path] = {
+                    'type': file.type,
+                    'data': file.data
+                };
+            });
+            resolve(database);
         }).catch(err => {
             reject(err);
         });
