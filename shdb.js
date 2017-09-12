@@ -1,18 +1,16 @@
 const fs = require('fs');
 const mime = require('mime-types');
-
-const flattenArray = (arr, result = []) => {
+Array.prototype.flatten = (arr, result = []) => {
     for (let i = 0, length = arr.length; i < length; i++) {
         const value = arr[i];
         if (Array.isArray(value)) {
-            flattenArray(value, result);
+            Array.flatten(value, result);
         } else {
             result.push(value);
         }
     }
     return result;
 };
-
 const readdirRecursivePromise = path => {
     return new Promise((resolve, reject) => {
         fs.readdir(path, (err, directoriesPaths) => {
@@ -26,7 +24,7 @@ const readdirRecursivePromise = path => {
                     directoriesPaths[newPathIndex] = statPromise(`${path}/${newPath}`);
                 });
                 Promise.all(directoriesPaths).then(out => {
-                    resolve(flattenArray(out));
+                    resolve(Array.flatten(out));
                 }).catch(err => {
                     reject(err);
                 });
@@ -34,7 +32,6 @@ const readdirRecursivePromise = path => {
         });
     });
 };
-
 const statPromise = path => {
     return new Promise((resolve, reject) => {
         fs.stat(path, (err, stats) => {
@@ -70,8 +67,7 @@ const statPromise = path => {
         });
     });
 };
-
-exports.initDBPromise = (path) => {
+exports.initDBPromise = path => {
     return new Promise((resolve, reject) => {
         readdirRecursivePromise(path).then(files => {
             resolve(files);
