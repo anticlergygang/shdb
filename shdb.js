@@ -1,5 +1,6 @@
 const fs = require('fs');
 const mime = require('mime-types');
+
 const flattenArray = (arr, result = []) => {
     for (let i = 0, length = arr.length; i < length; i++) {
         const value = arr[i];
@@ -11,6 +12,7 @@ const flattenArray = (arr, result = []) => {
     }
     return result;
 };
+
 const readdirRecursivePromise = path => {
     return new Promise((resolve, reject) => {
         fs.readdir(path, (err, directoriesPaths) => {
@@ -32,6 +34,7 @@ const readdirRecursivePromise = path => {
         });
     });
 };
+
 const statPromise = path => {
     return new Promise((resolve, reject) => {
         fs.stat(path, (err, stats) => {
@@ -45,17 +48,21 @@ const statPromise = path => {
                         reject(err);
                     });
                 } else if (stats.isFile()) {
-                    fs.readFile(path, (err, data) => {
-                        if (err) {
-                            reject(err);
-                        } else {
-                            resolve({
-                                'path': path,
-                                'type': mime.lookup(path),
-                                'data': data
-                            });
-                        }
-                    });
+                    if (mime.lookup(path) === false) {
+                        reject(`mime.lookup('${path}') === false`);
+                    } else {
+                        fs.readFile(path, (err, data) => {
+                            if (err) {
+                                reject(err);
+                            } else {
+                                resolve({
+                                    'path': path,
+                                    'type': mime.lookup(path),
+                                    'data': data
+                                });
+                            }
+                        });
+                    }
                 } else {
                     reject(`Error parsing path: ${path}`);
                 }
@@ -63,6 +70,7 @@ const statPromise = path => {
         });
     });
 };
+
 exports.initDBPromise = (path) => {
     return new Promise((resolve, reject) => {
         readdirRecursivePromise(path).then(files => {
