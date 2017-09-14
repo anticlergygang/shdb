@@ -67,12 +67,13 @@ const statPromise = path => {
         });
     });
 };
-exports.initDBPromise = path => {
+exports.initDBPromise = dbConfiguration => {
     return new Promise((resolve, reject) => {
+        //check dbConfiguration, make sure its "valid"
         let database = {
             'files': {}
         };
-        readdirRecursivePromise(path).then(files => {
+        readdirRecursivePromise(dbConfiguration.path).then(files => {
             files.forEach((file, i) => {
                 database['files'][file.path] = {
                     'type': file.type,
