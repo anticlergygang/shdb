@@ -67,7 +67,7 @@ const statPromise = path => {
         });
     });
 };
-exports.initDBPromise = dbConfiguration => {
+exports.gatherFilesPromise = dbConfiguration => {
     return new Promise((resolve, reject) => {
         //check dbConfiguration, make sure its "valid"
         let database = {
