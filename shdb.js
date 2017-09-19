@@ -53,9 +53,11 @@ const statPromise = path => {
                                 reject(err);
                             } else {
                                 resolve({
+                                    'timestamp': (new Date).getTime(),
                                     'path': path,
                                     'type': mime.lookup(path),
-                                    'data': data
+                                    'data': data,
+                                    'size': data.byteLength
                                 });
                             }
                         });
@@ -69,17 +71,8 @@ const statPromise = path => {
 };
 exports.gatherFilesPromise = directory => {
     return new Promise((resolve, reject) => {
-        let resFiles = {};
         readdirRecursivePromise(directory).then(files => {
-            files.forEach((file, i) => {
-                resFiles[file.path] = {
-                    'timestamp': (new Date).getTime(),
-                    'type': file.type,
-                    'size': file.data.byteLength,
-                    'data': file.data
-                };
-            });
-            resolve(resFiles);
+            resolve(files);
         }).catch(err => {
             reject(err);
         });
