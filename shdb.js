@@ -1,6 +1,16 @@
 const fs = require('fs');
 const mime = require('mime-types');
-
+const flattenArray = (arr, result = []) => {
+    for (let i = 0, length = arr.length; i < length; i++) {
+        const value = arr[i];
+        if (Array.isArray(value)) {
+            flattenArray(value, result);
+        } else {
+            result.push(value);
+        }
+    }
+    return result;
+};
 const readdirRecursivePromise = path => {
     return new Promise((resolve, reject) => {
         fs.readdir(path, (err, directoriesPaths) => {
