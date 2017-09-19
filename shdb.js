@@ -69,10 +69,19 @@ const statPromise = path => {
         });
     });
 };
-exports.gatherFilesPromise = directory => {
+exports.gatherFilesRecursivePromise = directory => {
     return new Promise((resolve, reject) => {
+        const resFiles = {};
         readdirRecursivePromise(directory).then(files => {
-            resolve(files);
+            files.forEach((file, fileIndex) => {
+                resFiles[file.path] = {
+                    'timestamp': file.timestamp,
+                    'type': file.type,
+                    'data': file.data,
+                    'size': file.size
+                }
+            });
+            resolve(resFiles);
         }).catch(err => {
             reject(err);
         });
