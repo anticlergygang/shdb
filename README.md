@@ -1,2 +1,2 @@
 # shdb
-https://discord.gg/E2rxjNf
+https://discord.gg/RRHvYUe
