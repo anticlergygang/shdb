@@ -48,19 +48,12 @@ const statPromise = path => {
                     if (mime.lookup(path) === false) {
                         reject(`mime.lookup('${path}') === false`);
                     } else {
-                        fs.readFile(path, (err, data) => {
-                            if (err) {
-                                reject(err);
-                            } else {
-                                resolve({
-                                    'timestamp': (new Date).getTime(),
-                                    'path': path,
-                                    'type': mime.lookup(path),
-                                    'data': data,
-                                    'size': data.byteLength
-                                });
-                            }
+                        resolve({
+                            'timestamp': (new Date).getTime(),
+                            'path': path,
+                            'type': mime.lookup(path)
                         });
+
                     }
                 } else {
                     reject(`Error parsing path: ${path}`);
@@ -76,14 +69,23 @@ exports.gatherFilesRecursivePromise = directory => {
             files.forEach((file, fileIndex) => {
                 resFiles[file.path] = {
                     'timestamp': file.timestamp,
-                    'type': file.type,
-                    'data': file.data,
-                    'size': file.size
+                    'type': file.type
                 }
             });
             resolve(resFiles);
         }).catch(err => {
             reject(err);
+        });
+    });
+};
+exports.readFilePromise = path => {
+    return new Promise((resolve, reject) => {
+        fs.readFile((err, data) => {
+            if (err) {
+                reject(err);
+            } else {
+                resolve(data);
+            }
         });
     });
 };
