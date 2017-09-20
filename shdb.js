@@ -80,7 +80,7 @@ exports.gatherFilesRecursivePromise = directory => {
 };
 exports.readFilePromise = path => {
     return new Promise((resolve, reject) => {
-        fs.readFile((err, data) => {
+        fs.readFile(path, (err, data) => {
             if (err) {
                 reject(err);
             } else {
