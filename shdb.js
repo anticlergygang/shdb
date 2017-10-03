@@ -62,15 +62,23 @@ const statPromise = path => {
         });
     });
 };
-exports.gatherFilesRecursivePromise = directory => {
+exports.readDirectoryRecursivePromise = directory => {
     return new Promise((resolve, reject) => {
         const resFiles = {};
         readdirRecursivePromise(directory).then(files => {
             files.forEach((file, fileIndex) => {
-                resFiles[file.path] = {
-                    'timestamp': file.timestamp,
-                    'type': file.type
-                }
+                fs.readFile(file.path, (err, data) => {
+                    if (err) {
+                        reject(err);
+                    } else {
+                        resFiles[file.path] = {
+                            'timestamp': file.timestamp,
+                            'type': file.type,
+                            'data': data,
+                            'byteLength': data.byteLength
+                        }
+                    }
+                });
             });
             resolve(resFiles);
         }).catch(err => {
