@@ -64,7 +64,7 @@ const statPromise = path => {
 };
 exports.readDirectoryRecursivePromise = directory => {
     return new Promise((resolve, reject) => {
-        const resFiles = {};
+        let resFiles = {};
         readdirRecursivePromise(directory).then(files => {
             files.forEach((file, fileIndex) => {
                 fs.readFile(file.path, (err, data) => {
