@@ -1,5 +1,16 @@
 const fs = require('fs');
 const mime = require('mime-types');
+const readFilePromise = path => {
+    return new Promise((resolve, reject) => {
+        fs.readFile(path, (err, data) => {
+            if (err) {
+                reject(err);
+            } else {
+                resolve(data);
+            }
+        });
+    });
+};
 const flattenArray = (arr, result = []) => {
     for (let i = 0, length = arr.length; i < length; i++) {
         const value = arr[i];
@@ -64,36 +75,21 @@ const statPromise = path => {
 };
 exports.readDirectoryRecursivePromise = directory => {
     return new Promise((resolve, reject) => {
-        let resFiles = {};
+        let readFiles = [];
         readdirRecursivePromise(directory).then(files => {
             files.forEach((file, fileIndex) => {
-                fs.readFile(file.path, (err, data) => {
-                    if (err) {
-                        reject(err);
-                    } else {
-                        resFiles[file.path] = {
-                            'timestamp': file.timestamp,
-                            'type': file.type,
-                            'data': data,
-                            'byteLength': data.byteLength
-                        }
-                    }
-                });
+                readFiles.push(readFilePromise(file.path));
             });
-            resolve(resFiles);
+            Promise.all(readFiles).then(out => {
+                files.forEach((e, i) => {
+                    files[i].data = out[i];
+                });
+                resolve(files);
+            }).catch(err => {
+                reject(err);
+            })
         }).catch(err => {
             reject(err);
-        });
-    });
-};
-exports.readFilePromise = path => {
-    return new Promise((resolve, reject) => {
-        fs.readFile(path, (err, data) => {
-            if (err) {
-                reject(err);
-            } else {
-                resolve(data);
-            }
         });
     });
 };
