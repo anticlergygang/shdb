@@ -49,7 +49,7 @@ const statPromise = path => {
                         reject(`mime.lookup('${path}') === false`);
                     } else {
                         resolve({
-                            'timestamp': (new Date).getTime(),
+                            'timestamp': (new Date()).getTime(),
                             'path': path,
                             'type': mime.lookup(path)
                         });
