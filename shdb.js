@@ -57,14 +57,21 @@ const statPromise = path => {
                     });
                 } else if (stats.isFile()) {
                     if (mime.lookup(path) === false) {
-                        reject(`mime.lookup('${path}') === false`);
+                        if (path.indexOf('.gitignore')) {
+                            resolve({
+                                'timestamp': (new Date()).getTime(),
+                                'path': path,
+                                'type': 'gitignore'
+                            });
+                        } else {
+                            reject(`mime.lookup('${path}') === false`);
+                        }
                     } else {
                         resolve({
                             'timestamp': (new Date()).getTime(),
                             'path': path,
                             'type': mime.lookup(path)
                         });
-
                     }
                 } else {
                     reject(`Error parsing path: ${path}`);
