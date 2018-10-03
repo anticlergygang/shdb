@@ -1,6 +1,6 @@
 {
   "name": "shdb",
-  "version": "0.0.34",
+  "version": "0.0.35",
   "description": "shdb",
   "main": "shdb.js",
   "scripts": {
