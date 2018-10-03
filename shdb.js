@@ -88,7 +88,7 @@ const cipherdir = (directory, password) => {
     return new Promise((resolve, reject) => {
         readdir(directory).then(files => {
             let count = 0
-            console.log(new Date().getTime())
+            // console.log(new Date().getTime())
             files.forEach((file, fileIndex) => {
                 if (file.path.indexOf('.DS_Store') === -1) {
                     const cipher = crypto.createCipher('aes192', password)
@@ -116,7 +116,7 @@ const decipherdir = (directory, password) => {
     return new Promise((resolve, reject) => {
         readdir(directory).then(files => {
             let count = 0
-            console.log(new Date().getTime())
+            // console.log(new Date().getTime())
             files.forEach((file, fileIndex) => {
                 if (file.path.indexOf('.DS_Store') === -1 && file.path.indexOf('.enc') !== -1) {
                     const decipher = crypto.createDecipher('aes192', password)
