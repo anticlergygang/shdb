@@ -24,7 +24,7 @@ const statPromise = path => {
     })
 }
 
-exports.readdir = mainPath => {
+const readdir = mainPath => {
     return new Promise((resolve, reject) => {
         let files = []
         readdirPromise(mainPath).then(dirInfo => {
@@ -41,9 +41,9 @@ exports.readdir = mainPath => {
                     subDirectories.push(stat.path)
                 } else if (stat.stats.isFile()) {
                     if (mime.lookup(stat.path)) {
-                        files.push({ 'path': stat.path, 'type': mime.lookup(stat.path), 'stats': stat.stats, 'data': fs.readFileSync(stat.path)})
+                        files.push({ 'path': stat.path, 'type': mime.lookup(stat.path), 'stats': stat.stats, 'data': fs.readFileSync(stat.path) })
                     } else {
-                        files.push({ 'path': stat.path, 'type': 'unknown', 'stats': stat.stats, 'data': fs.readFileSync(stat.path)})
+                        files.push({ 'path': stat.path, 'type': 'unknown', 'stats': stat.stats, 'data': fs.readFileSync(stat.path) })
                     }
                 }
             })
@@ -62,9 +62,9 @@ exports.readdir = mainPath => {
                                 subDirectories.push(stat.path)
                             } else if (stat.stats.isFile()) {
                                 if (mime.lookup(stat.path)) {
-                                    files.push({ 'path': stat.path, 'type': mime.lookup(stat.path), 'stats': stat.stats, 'data': fs.readFileSync(stat.path)})
+                                    files.push({ 'path': stat.path, 'type': mime.lookup(stat.path), 'stats': stat.stats, 'data': fs.readFileSync(stat.path) })
                                 } else {
-                                    files.push({ 'path': stat.path, 'type': 'unknown', 'stats': stat.stats, 'data': fs.readFileSync(stat.path)})
+                                    files.push({ 'path': stat.path, 'type': 'unknown', 'stats': stat.stats, 'data': fs.readFileSync(stat.path) })
                                 }
                             }
                         })
@@ -83,3 +83,64 @@ exports.readdir = mainPath => {
         })
     })
 }
+
+const cipherdir = (directory, password) => {
+    return new Promise((resolve, reject) => {
+        readdir(directory).then(files => {
+            let count = 0
+            console.log(new Date().getTime())
+            files.forEach((file, fileIndex) => {
+                if (file.path.indexOf('.DS_Store') === -1) {
+                    const cipher = crypto.createCipher('aes192', password)
+                    const input = fs.createReadStream(file.path, { 'encoding': 'utf8' })
+                    const output = fs.createWriteStream(`${file.path}.enc`)
+                    let stream = input.pipe(cipher).pipe(output)
+                    stream.on('finish', () => {
+                        count = count + 1
+                        fs.unlink(file.path, () => {
+                            // console.log(`${file.path} ciphered too ${file.path}.enc ${new Date().getTime()}`)
+                            if (count === files.length) {
+                                resolve('finished')
+                            }
+                        })
+                    })
+                }
+            })
+        }).catch(err => {
+            reject(err)
+        })
+    })
+}
+
+const decipherdir = (directory, password) => {
+    return new Promise((resolve, reject) => {
+        readdir(directory).then(files => {
+            let count = 0
+            console.log(new Date().getTime())
+            files.forEach((file, fileIndex) => {
+                if (file.path.indexOf('.DS_Store') === -1 && file.path.indexOf('.enc') !== -1) {
+                    const decipher = crypto.createDecipher('aes192', password)
+                    const input = fs.createReadStream(file.path)
+                    const output = fs.createWriteStream(file.path.replace('.enc', ''))
+                    input.pipe(decipher).pipe(output)
+                    let stream = input.pipe(decipher).pipe(output)
+                    stream.on('finish', () => {
+                        count = count + 1
+                        fs.unlink(file.path, () => {
+                            // console.log(`${file.path} deciphered too ${file.path.replace('.enc', '')} ${new Date().getTime()}`)
+                            if (count === files.length) {
+                                resolve('finished')
+                            }
+                        })
+                    })
+                }
+            })
+        }).catch(err => {
+            reject(err)
+        })
+    })
+}
+
+exports.readdir = readdir
+exports.cipherdir = cipherdir
+exports.decipherdir = decipherdir
