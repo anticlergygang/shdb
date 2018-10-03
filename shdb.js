@@ -41,8 +41,7 @@ exports.readdir = mainPath => {
                     subDirectories.push(stat.path)
                 } else if (stat.stats.isFile()) {
                     if (mime.lookup(stat.path)) {
-                        let data = fs.readFileSync(stat.path)
-                        files.push({ 'path': stat.path, 'type': mime.lookup(stat.path), 'stats': stat.stats, 'data': data, 'size': data.size })
+                        files.push({ 'path': stat.path, 'type': mime.lookup(stat.path), 'stats': stat.stats, 'data': fs.readFileSync(stat.path), 'size': stat.stats.size })
                     }
                 }
             })
@@ -61,8 +60,7 @@ exports.readdir = mainPath => {
                                 subDirectories.push(stat.path)
                             } else if (stat.stats.isFile()) {
                                 if (mime.lookup(stat.path)) {
-                                    let data = fs.readFileSync(stat.path)
-                                    files.push({ 'path': stat.path, 'type': mime.lookup(stat.path), 'stats': stat.stats, 'data': data, 'size': data.size })
+                                    files.push({ 'path': stat.path, 'type': mime.lookup(stat.path), 'stats': stat.stats, 'data': fs.readFileSync(stat.path), 'size': stat.stats.size })
                                 }
                             }
                         })
