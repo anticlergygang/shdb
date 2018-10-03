@@ -87,7 +87,7 @@ const readdir = mainPath => {
 const cipherdir = (directory, password) => {
     return new Promise((resolve, reject) => {
         readdir(directory).then(files => {
-            let count = 0
+            let count = 1
             // console.log(new Date().getTime())
             files.forEach((file, fileIndex) => {
                 if (file.path.indexOf('.DS_Store') === -1) {
@@ -115,7 +115,7 @@ const cipherdir = (directory, password) => {
 const decipherdir = (directory, password) => {
     return new Promise((resolve, reject) => {
         readdir(directory).then(files => {
-            let count = 0
+            let count = 1
             // console.log(new Date().getTime())
             files.forEach((file, fileIndex) => {
                 if (file.path.indexOf('.DS_Store') === -1 && file.path.indexOf('.enc') !== -1) {
