@@ -1,102 +1,81 @@
-const fs = require('fs');
-const mime = require('mime-types');
-const readFilePromise = path => {
+const mime = require('mime-types')
+
+const readdirPromise = path => {
     return new Promise((resolve, reject) => {
-        fs.readFile(path, (err, data) => {
+        fs.readdir(path, (err, files) => {
             if (err) {
-                reject(err);
+                reject(err)
             } else {
-                resolve(data);
+                resolve({ 'path': path, 'files': files })
             }
-        });
-    });
-};
-const flattenArray = (arr, result = []) => {
-    for (let i = 0, length = arr.length; i < length; i++) {
-        const value = arr[i];
-        if (Array.isArray(value)) {
-            flattenArray(value, result);
-        } else {
-            result.push(value);
-        }
-    }
-    return result;
-};
-const readdirRecursivePromise = path => {
-    return new Promise((resolve, reject) => {
-        fs.readdir(path, (err, directoriesPaths) => {
-            if (err) {
-                reject(err);
-            } else {
-                if (directoriesPaths.indexOf('.DS_Store') != -1) {
-                    directoriesPaths.splice(directoriesPaths.indexOf('.DS_Store'), 1);
-                }
-                directoriesPaths.forEach((newPath, newPathIndex) => {
-                    directoriesPaths[newPathIndex] = statPromise(`${path}/${newPath}`);
-                });
-                Promise.all(directoriesPaths).then(out => {
-                    resolve(flattenArray(out));
-                }).catch(err => {
-                    reject(err);
-                });
-            }
-        });
-    });
-};
+        })
+    })
+}
+
 const statPromise = path => {
     return new Promise((resolve, reject) => {
         fs.stat(path, (err, stats) => {
             if (err) {
-                reject(err);
+                reject(err)
             } else {
-                if (stats.isDirectory()) {
-                    readdirRecursivePromise(path).then(out => {
-                        resolve(out);
-                    }).catch(err => {
-                        reject(err);
-                    });
-                } else if (stats.isFile()) {
-                    if (mime.lookup(path) === false) {
-                        if (path.indexOf('.gitignore')) {
-                            resolve({
-                                'timestamp': (new Date()).getTime(),
-                                'path': path,
-                                'type': 'gitignore'
-                            });
-                        } else {
-                            reject(`mime.lookup('${path}') === false`);
-                        }
-                    } else {
-                        resolve({
-                            'timestamp': (new Date()).getTime(),
-                            'path': path,
-                            'type': mime.lookup(path)
-                        });
-                    }
-                } else {
-                    reject(`Error parsing path: ${path}`);
-                }
+                resolve({ 'path': path, 'stats': stats })
             }
-        });
-    });
-};
-exports.readDirectoryRecursivePromise = directory => {
+        })
+    })
+}
+
+exports.readdir = mainPath => {
     return new Promise((resolve, reject) => {
-        let readFiles = [];
-        readdirRecursivePromise(directory).then(files => {
-            files.forEach((file, fileIndex) => {
-                readFiles.push(readFilePromise(file.path));
-            });
-            Promise.all(readFiles).then(out => {
-                files.forEach((e, i) => {
-                    files[i].data = out[i];
-                });
-                resolve(files);
-            }).catch(err => {
-                reject(err);
+        let files = {}
+        readdirPromise(mainPath).then(dirInfo => {
+            let statArr = []
+            dirInfo.files.forEach((path, pathIndex) => {
+                statArr.push(statPromise(`${dirInfo['path']}/${path}`))
             })
+            return Promise.all(statArr)
+        }).then(statInfo => {
+            let subDirectories = []
+            let readyToRead = true
+            statInfo.forEach((stat, statIndex) => {
+                if (stat.stats.isDirectory()) {
+                    subDirectories.push(stat.path)
+                } else if (stat.stats.isFile()) {
+                    if (mime.lookup(stat.path)) {
+                        files[stat.path] = { 'type': mime.lookup(stat.path), 'stats': stat.stats, 'data': fs.readFileSync(stat.path) }
+                    }
+                }
+            })
+            let readInterval = setInterval(() => {
+                if (subDirectories.length > 0 && readyToRead) {
+                    readyToRead = false
+                    readdirPromise(subDirectories.pop()).then(dirInfo => {
+                        let statArr = []
+                        dirInfo.files.forEach((path, pathIndex) => {
+                            statArr.push(statPromise(`${dirInfo['path']}/${path}`))
+                        })
+                        return Promise.all(statArr)
+                    }).then(statInfo => {
+                        statInfo.forEach((stat, statIndex) => {
+                            if (stat.stats.isDirectory()) {
+                                subDirectories.push(stat.path)
+                            } else if (stat.stats.isFile()) {
+                                if (mime.lookup(stat.path)) {
+                                    files[stat.path] = { 'type': mime.lookup(stat.path), 'stats': stat.stats, 'data': fs.readFileSync(stat.path) }
+                                }
+                            }
+                        })
+                        readyToRead = true
+                    }).catch(err => {
+                        clearInterval(readInterval)
+                        reject(err)
+                    })
+                } else if (subDirectories.length === 0 && readyToRead) {
+                    clearInterval(readInterval)
+                    resolve(files)
+                }
+            }, 1)
         }).catch(err => {
-            reject(err);
-        });
-    });
-};
+            reject(err)
+        })
+    })
+}
