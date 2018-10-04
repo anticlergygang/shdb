@@ -132,6 +132,8 @@ const decipherdir = (directory, password) => {
                             }
                         })
                     })
+                } else {
+                    count = count + 1
                 }
             })
         }).catch(err => {
