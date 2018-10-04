@@ -44,8 +44,20 @@ shdb.cipherFile('/path/to/file.ext', 'aes256-password').then(finished => {
     console.log(err)
 })
 
+shdb.compressFile('/path/to/file.ext').then(finished => {
+    // file compression is finished when this promise resolves
+}).catch(err => {
+    console.log(err)
+})
+
 shdb.decipherFile('/path/to/file.ext', 'aes256-password').then(finished => {
     // file decipher is finished when this promise resolves
+}).catch(err => {
+    console.log(err)
+})
+
+shdb.decompressFile('/path/to/file.ext').then(finished => {
+    // file decompression is finished when this promise resolves
 }).catch(err => {
     console.log(err)
 })

@@ -1,4 +1,5 @@
 const mime = require('mime-types')
+const lzma = require('lzma-native')
 
 const readDirPromise = path => {
     return new Promise((resolve, reject) => {
@@ -181,6 +182,27 @@ const cipherFile = (path, password) => {
     })
 }
 
+const compressFile = path => {
+    return new Promise((resolve, reject) => {
+        try {
+            shdb.readFile(path).then(fileObject => {
+                lzma.compress(fileObject.data, 9).then(result => {
+                    fs.writeFileSync(`${fileObject.path}.xz`, result)
+                    fs.unlink(fileObject.path, () => {
+                        resolve('finished')
+                    })
+                }).catch(err => {
+                    reject(err)
+                })
+            }).catch(err => {
+                reject(err)
+            })
+        } catch (err) {
+            reject(err)
+        }
+    })
+}
+
 const decipherFile = (path, password) => {
     return new Promise((resolve, reject) => {
         try {
@@ -199,9 +221,28 @@ const decipherFile = (path, password) => {
     })
 }
 
+const decompressFile = path => {
+    return new Promise((resolve, reject) => {
+        try {
+            lzma.decompress(fs.readFileSync(`${path}.xz`)).then(result => {
+                fs.writeFileSync(path, result)
+                fs.unlink(`${path}.xz`, () => {
+                    console.log(`'${path}.xz' decompressed ...`)
+                })
+            }).catch(err => {
+                console.log(err)
+            })
+        } catch (err) {
+            reject(err)
+        }
+    })
+}
+
 exports.readDir = readDir
 exports.cipherDir = cipherDir
 exports.decipherDir = decipherDir
 exports.readFile = readFile
 exports.cipherFile = cipherFile
+exports.compressFile = compressFile
 exports.decipherFile = decipherFile
+exports.decompressFile = decompressFile
