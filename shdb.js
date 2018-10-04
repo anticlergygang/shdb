@@ -227,7 +227,7 @@ const decompressFile = path => {
             lzma.decompress(fs.readFileSync(`${path}.xz`)).then(result => {
                 fs.writeFileSync(path, result)
                 fs.unlink(`${path}.xz`, () => {
-                    console.log(`'${path}.xz' decompressed ...`)
+                    resolve('finished')
                 })
             }).catch(err => {
                 console.log(err)
