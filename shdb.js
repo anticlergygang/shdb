@@ -127,7 +127,7 @@ const decipherdir = (directory, password) => {
                         fs.unlink(file.path, () => {
                             count = count + 1
                             // console.log(`${file.path} deciphered too ${file.path.replace('.enc', '')} ${new Date().getTime()}`)
-                            if (count === files.length) {
+                            if (count >= files.length) {
                                 resolve('finished')
                             }
                         })
