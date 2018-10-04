@@ -147,6 +147,22 @@ const decipherDir = (directory, password) => {
     })
 }
 
+const readFile = path => {
+    return new Promise((resolve, reject) => {
+        statPromise(path).then(stat => {
+            if (stat.stats.isFile()) {
+                if (mime.lookup(stat.path)) {
+                    resolve({ 'path': stat.path, 'type': mime.lookup(stat.path), 'stats': stat.stats, 'data': fs.readFileSync(stat.path) })
+                } else {
+                    resolve({ 'path': stat.path, 'type': 'unknown', 'stats': stat.stats, 'data': fs.readFileSync(stat.path) })
+                }
+            }
+        }).catch(err => {
+            console.log(err)
+        })
+    })
+}
+
 const cipherFile = (path, password) => {
     return new Promise((resolve, reject) => {
         try {
@@ -186,5 +202,6 @@ const decipherFile = (path, password) => {
 exports.readDir = readDir
 exports.cipherDir = cipherDir
 exports.decipherDir = decipherDir
+exports.readFile = readFile
 exports.cipherFile = cipherFile
 exports.decipherFile = decipherFile

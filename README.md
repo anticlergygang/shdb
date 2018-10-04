@@ -5,7 +5,7 @@ https://discord.gg/RRHvYUe
 shdb.readDir('/path/to/dir').then(filesArray => {
     // an array of file objects that look like this
     // {
-    //     path: '/Path/to.file',
+    //     path: '/path/to/dir',
     //     type: 'file mime-type',
     //     stats: {statsObject},
     //     data: <buffer >
@@ -22,6 +22,18 @@ shdb.cipherDir('/path/to/dir', 'aes256-password').then(finished => {
 
 shdb.decipherDir('/path/to/dir', 'aes256-password').then(finished => {
     // directory decipher is finished when this promise resolves
+}).catch(err => {
+    console.log(err)
+})
+
+shdb.readFile('/path/to/file.ext').then(fileObject => {
+    // file objects that look like this
+    // {
+    //     path: '/path/to/file.ext',
+    //     type: 'file mime-type',
+    //     stats: {statsObject},
+    //     data: <buffer >
+    // }
 }).catch(err => {
     console.log(err)
 })
