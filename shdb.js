@@ -96,8 +96,8 @@ const cipherdir = (directory, password) => {
                     const output = fs.createWriteStream(`${file.path}.enc`)
                     let stream = input.pipe(cipher).pipe(output)
                     stream.on('finish', () => {
-                        count = count + 1
                         fs.unlink(file.path, () => {
+                            count = count + 1
                             // console.log(`${file.path} ciphered too ${file.path}.enc ${new Date().getTime()}`)
                             if (count === files.length) {
                                 resolve('finished')
@@ -124,8 +124,8 @@ const decipherdir = (directory, password) => {
                     const output = fs.createWriteStream(file.path.replace('.enc', ''))
                     let stream = input.pipe(decipher).pipe(output)
                     stream.on('finish', () => {
-                        count = count + 1
                         fs.unlink(file.path, () => {
+                            count = count + 1
                             // console.log(`${file.path} deciphered too ${file.path.replace('.enc', '')} ${new Date().getTime()}`)
                             if (count === files.length) {
                                 resolve('finished')
