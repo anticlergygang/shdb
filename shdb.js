@@ -1,6 +1,6 @@
 const mime = require('mime-types')
 
-const readdirPromise = path => {
+const readDirPromise = path => {
     return new Promise((resolve, reject) => {
         fs.readdir(path, (err, files) => {
             if (err) {
@@ -24,10 +24,10 @@ const statPromise = path => {
     })
 }
 
-const readdir = mainPath => {
+const readDir = mainPath => {
     return new Promise((resolve, reject) => {
         let files = []
-        readdirPromise(mainPath).then(dirInfo => {
+        readDirPromise(mainPath).then(dirInfo => {
             let statArr = []
             dirInfo.files.forEach((path, pathIndex) => {
                 statArr.push(statPromise(`${dirInfo['path']}/${path}`))
@@ -50,7 +50,7 @@ const readdir = mainPath => {
             let readInterval = setInterval(() => {
                 if (subDirectories.length > 0 && readyToRead) {
                     readyToRead = false
-                    readdirPromise(subDirectories.pop()).then(dirInfo => {
+                    readDirPromise(subDirectories.pop()).then(dirInfo => {
                         let statArr = []
                         dirInfo.files.forEach((path, pathIndex) => {
                             statArr.push(statPromise(`${dirInfo['path']}/${path}`))
@@ -84,9 +84,9 @@ const readdir = mainPath => {
     })
 }
 
-const cipherdir = (directory, password) => {
+const cipherDir = (directory, password) => {
     return new Promise((resolve, reject) => {
-        readdir(directory).then(files => {
+        readDir(directory).then(files => {
             let count = 1
             // console.log(new Date().getTime())
             files.forEach((file, fileIndex) => {
@@ -98,7 +98,6 @@ const cipherdir = (directory, password) => {
                     stream.on('finish', () => {
                         fs.unlink(file.path, () => {
                             count = count + 1
-                            // console.log(`${file.path} ciphered too ${file.path}.enc ${new Date().getTime()}`)
                             if (count === files.length) {
                                 resolve('finished')
                             }
@@ -117,11 +116,10 @@ const cipherdir = (directory, password) => {
     })
 }
 
-const decipherdir = (directory, password) => {
+const decipherDir = (directory, password) => {
     return new Promise((resolve, reject) => {
-        readdir(directory).then(files => {
+        readDir(directory).then(files => {
             let count = 1
-            // console.log(new Date().getTime())
             files.forEach((file, fileIndex) => {
                 if (file.path.indexOf('.DS_Store') === -1 && file.path.indexOf('.enc') !== -1) {
                     const decipher = crypto.createDecipher('aes256', password)
@@ -131,7 +129,6 @@ const decipherdir = (directory, password) => {
                     stream.on('finish', () => {
                         fs.unlink(file.path, () => {
                             count = count + 1
-                            // console.log(`${file.path} deciphered too ${file.path.replace('.enc', '')} ${new Date().getTime()}`)
                             if (count >= files.length) {
                                 resolve('finished')
                             }
@@ -150,6 +147,44 @@ const decipherdir = (directory, password) => {
     })
 }
 
-exports.readdir = readdir
-exports.cipherdir = cipherdir
-exports.decipherdir = decipherdir
+const cipherFile = (path, password) => {
+    return new Promise((resolve, reject) => {
+        try {
+            const cipher = crypto.createCipher('aes256', password)
+            const input = fs.createReadStream(path)
+            const output = fs.createWriteStream(`${path}.enc`)
+            let stream = input.pipe(cipher).pipe(output)
+            stream.on('finish', () => {
+                fs.unlink(path, () => {
+                    resolve('finished')
+                })
+            })
+        } catch (err) {
+            reject(err)
+        }
+    })
+}
+
+const decipherFile = (path, password) => {
+    return new Promise((resolve, reject) => {
+        try {
+            const decipher = crypto.createDecipher('aes256', password)
+            const input = fs.createReadStream(path)
+            const output = fs.createWriteStream(path.replace('.enc', ''))
+            let stream = input.pipe(decipher).pipe(output)
+            stream.on('finish', () => {
+                fs.unlink(path, () => {
+                    resolve('finished')
+                })
+            })
+        } catch (err) {
+            reject(err)
+        }
+    })
+}
+
+exports.readDir = readDir
+exports.cipherDir = cipherDir
+exports.decipherDir = decipherDir
+exports.cipherFile = cipherFile
+exports.decipherFile = decipherFile

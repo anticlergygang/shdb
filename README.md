@@ -2,7 +2,7 @@
 https://discord.gg/RRHvYUe
 
 ```js
-shdb.readdir('/path/to/dir').then(filesArray => {
+shdb.readDir('/path/to/dir').then(filesArray => {
     // an array of file objects that look like this
     // {
     //     path: '/Path/to.file',
@@ -14,14 +14,26 @@ shdb.readdir('/path/to/dir').then(filesArray => {
     console.log(err)
 })
 
-shdb.cipherdir('/path/to/dir', 'aes256-password').then(finished => {
+shdb.cipherDir('/path/to/dir', 'aes256-password').then(finished => {
     // directory cipher is finished when this promise resolves
 }).catch(err => {
     console.log(err)
 })
 
-shdb.decipherdir('/path/to/dir', 'aes256-password').then(finished => {
+shdb.decipherDir('/path/to/dir', 'aes256-password').then(finished => {
     // directory decipher is finished when this promise resolves
+}).catch(err => {
+    console.log(err)
+})
+
+shdb.cipherFile('/path/to/dir', 'aes256-password').then(finished => {
+    // file cipher is finished when this promise resolves
+}).catch(err => {
+    console.log(err)
+})
+
+shdb.decipherFile('/path/to/dir', 'aes256-password').then(finished => {
+    // file decipher is finished when this promise resolves
 }).catch(err => {
     console.log(err)
 })
@@ -45,9 +57,9 @@ shdb.decipherdir('/path/to/dir', 'aes256-password').then(finished => {
 
 const shdb = require('shdb')
 
-shdb.cipherdir('/Users/anti/passthepotion', process.env.DIRCIPHERKEY).then(out => {
+shdb.cipherDir('/Users/anti/passthepotion', process.env.DIRCIPHERKEY).then(out => {
     setTimeout(() => {
-        shdb.decipherdir('/Users/anti/passthepotion', process.env.DIRCIPHERKEY).then(out => {
+        shdb.decipherDir('/Users/anti/passthepotion', process.env.DIRCIPHERKEY).then(out => {
             console.log(out)
         }).catch(err => {
             console.log(err)
