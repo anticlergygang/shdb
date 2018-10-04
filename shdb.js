@@ -97,7 +97,6 @@ const cipherdir = (directory, password) => {
                     let stream = input.pipe(cipher).pipe(output)
                     stream.on('finish', () => {
                         count = count + 1
-                        fs.truncateSync(file.path, 0)
                         fs.unlink(file.path, () => {
                             // console.log(`${file.path} ciphered too ${file.path}.enc ${new Date().getTime()}`)
                             if (count === files.length) {
@@ -126,7 +125,6 @@ const decipherdir = (directory, password) => {
                     let stream = input.pipe(decipher).pipe(output)
                     stream.on('finish', () => {
                         count = count + 1
-                        fs.truncateSync(file.path, 0)
                         fs.unlink(file.path, () => {
                             // console.log(`${file.path} deciphered too ${file.path.replace('.enc', '')} ${new Date().getTime()}`)
                             if (count === files.length) {
