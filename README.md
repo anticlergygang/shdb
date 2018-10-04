@@ -26,3 +26,5 @@ shdb.decipherdir('/path/to/dir', 'aes256-password').then(finished => {
     console.log(err)
 })
 ```
+
+![Alt Text](https://i.imgur.com/UqW3X39.gif)
