@@ -39,7 +39,7 @@ shdb.decipherdir('/path/to/dir', 'aes256-password').then(finished => {
     Change '/Users/anti/passthepotion', and process.env.DIRCIPHERKEY to something that will
     work for you.
 
-    THIS COULD MAKE YOU LOOSE DATA IF YOU DO IT WRONG, there now you can't say I didn't warn you.
+    THIS COULD MAKE YOU LOSE DATA IF YOU DO IT WRONG, there now you can't say I didn't warn you.
 
 */ 
 
