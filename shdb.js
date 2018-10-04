@@ -41,9 +41,9 @@ const readDir = mainPath => {
                     subDirectories.push(stat.path)
                 } else if (stat.stats.isFile()) {
                     if (mime.lookup(stat.path)) {
-                        files.push({ 'path': stat.path, 'type': mime.lookup(stat.path), 'stats': stat.stats, 'data': fs.readFileSync(stat.path) })
+                        files.push({ 'path': stat.path, 'type': mime.lookup(stat.path), 'stats': stat.stats, 'data': fs.readFileSync(stat.path).toString() })
                     } else {
-                        files.push({ 'path': stat.path, 'type': 'unknown', 'stats': stat.stats, 'data': fs.readFileSync(stat.path) })
+                        files.push({ 'path': stat.path, 'type': 'unknown', 'stats': stat.stats, 'data': fs.readFileSync(stat.path).toString() })
                     }
                 }
             })
@@ -62,9 +62,9 @@ const readDir = mainPath => {
                                 subDirectories.push(stat.path)
                             } else if (stat.stats.isFile()) {
                                 if (mime.lookup(stat.path)) {
-                                    files.push({ 'path': stat.path, 'type': mime.lookup(stat.path), 'stats': stat.stats, 'data': fs.readFileSync(stat.path) })
+                                    files.push({ 'path': stat.path, 'type': mime.lookup(stat.path), 'stats': stat.stats, 'data': fs.readFileSync(stat.path).toString() })
                                 } else {
-                                    files.push({ 'path': stat.path, 'type': 'unknown', 'stats': stat.stats, 'data': fs.readFileSync(stat.path) })
+                                    files.push({ 'path': stat.path, 'type': 'unknown', 'stats': stat.stats, 'data': fs.readFileSync(stat.path).toString() })
                                 }
                             }
                         })
@@ -152,9 +152,9 @@ const readFile = path => {
         statPromise(path).then(stat => {
             if (stat.stats.isFile()) {
                 if (mime.lookup(stat.path)) {
-                    resolve({ 'path': stat.path, 'type': mime.lookup(stat.path), 'stats': stat.stats, 'data': fs.readFileSync(stat.path) })
+                    resolve({ 'path': stat.path, 'type': mime.lookup(stat.path), 'stats': stat.stats, 'data': fs.readFileSync(stat.path).toString() })
                 } else {
-                    resolve({ 'path': stat.path, 'type': 'unknown', 'stats': stat.stats, 'data': fs.readFileSync(stat.path) })
+                    resolve({ 'path': stat.path, 'type': 'unknown', 'stats': stat.stats, 'data': fs.readFileSync(stat.path).toString() })
                 }
             }
         }).catch(err => {
