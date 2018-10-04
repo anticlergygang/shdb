@@ -104,6 +104,11 @@ const cipherdir = (directory, password) => {
                             }
                         })
                     })
+                } else {
+                    count = count + 1
+                    if (count === files.length) {
+                        resolve('finished')
+                    }
                 }
             })
         }).catch(err => {
