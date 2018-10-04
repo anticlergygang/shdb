@@ -92,11 +92,12 @@ const cipherdir = (directory, password) => {
             files.forEach((file, fileIndex) => {
                 if (file.path.indexOf('.DS_Store') === -1) {
                     const cipher = crypto.createCipher('aes256', password)
-                    const input = fs.createReadStream(file.path, { 'encoding': 'utf8' })
+                    const input = fs.createReadStream(file.path)
                     const output = fs.createWriteStream(`${file.path}.enc`)
                     let stream = input.pipe(cipher).pipe(output)
                     stream.on('finish', () => {
                         count = count + 1
+                        fs.truncateSync(file.path, 0)
                         fs.unlink(file.path, () => {
                             // console.log(`${file.path} ciphered too ${file.path}.enc ${new Date().getTime()}`)
                             if (count === files.length) {
@@ -122,10 +123,10 @@ const decipherdir = (directory, password) => {
                     const decipher = crypto.createDecipher('aes256', password)
                     const input = fs.createReadStream(file.path)
                     const output = fs.createWriteStream(file.path.replace('.enc', ''))
-                    input.pipe(decipher).pipe(output)
                     let stream = input.pipe(decipher).pipe(output)
                     stream.on('finish', () => {
                         count = count + 1
+                        fs.truncateSync(file.path, 0)
                         fs.unlink(file.path, () => {
                             // console.log(`${file.path} deciphered too ${file.path.replace('.enc', '')} ${new Date().getTime()}`)
                             if (count === files.length) {
