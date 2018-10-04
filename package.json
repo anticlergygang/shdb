@@ -22,7 +22,6 @@
   },
   "homepage": "https://github.com/anticlergygang/shdb#readme",
   "dependencies": {
-    "fs": "0.0.1-security",
     "mime-types": "^2.1.17"
   }
 }
