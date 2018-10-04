@@ -26,13 +26,13 @@ shdb.decipherDir('/path/to/dir', 'aes256-password').then(finished => {
     console.log(err)
 })
 
-shdb.cipherFile('/path/to/dir', 'aes256-password').then(finished => {
+shdb.cipherFile('/path/to/file.ext', 'aes256-password').then(finished => {
     // file cipher is finished when this promise resolves
 }).catch(err => {
     console.log(err)
 })
 
-shdb.decipherFile('/path/to/dir', 'aes256-password').then(finished => {
+shdb.decipherFile('/path/to/file.ext', 'aes256-password').then(finished => {
     // file decipher is finished when this promise resolves
 }).catch(err => {
     console.log(err)
