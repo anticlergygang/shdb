@@ -5,7 +5,8 @@ https://discord.gg/RRHvYUe
 shdb.readDir('/path/to/dir').then(filesArray => {
     // an array of file objects that look like this
     // {
-    //     path: '/path/to/dir',
+    //     path: '/path/to/dir/file.ext',
+    //     linkPath: '/file.ext',
     //     type: 'file mime-type',
     //     stats: {statsObject},
     //     data: <buffer >
@@ -30,6 +31,7 @@ shdb.readFile('/path/to/file.ext').then(fileObject => {
     // file objects that look like this
     // {
     //     path: '/path/to/file.ext',
+    //     linkPath: '/file.ext',
     //     type: 'file mime-type',
     //     stats: {statsObject},
     //     data: <buffer >
