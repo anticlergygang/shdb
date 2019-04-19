@@ -40,6 +40,7 @@ const readDir = mainPath => {
             let readyToRead = true
             statInfo.forEach((stat, statIndex) => {
                 if (stat.stats.isDirectory()) {
+                    directories.push(stat.path)
                     subDirectories.push(stat.path)
                 } else if (stat.stats.isFile()) {
                     if (mime.lookup(stat.path)) {
@@ -49,7 +50,6 @@ const readDir = mainPath => {
                     }
                 }
             })
-            directories.join(subDirectories)
             let readInterval = setInterval(() => {
                 if (subDirectories.length > 0 && readyToRead) {
                     readyToRead = false
@@ -110,6 +110,7 @@ const statsDir = mainPath => {
             let readyToRead = true
             statInfo.forEach((stat, statIndex) => {
                 if (stat.stats.isDirectory()) {
+                    directories.push(stat.path)
                     subDirectories.push(stat.path)
                 } else if (stat.stats.isFile()) {
                     if (mime.lookup(stat.path)) {
@@ -119,7 +120,6 @@ const statsDir = mainPath => {
                     }
                 }
             })
-            directories.join(subDirectories)
             let readInterval = setInterval(() => {
                 if (subDirectories.length > 0 && readyToRead) {
                     readyToRead = false
