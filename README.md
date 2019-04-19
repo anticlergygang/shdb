@@ -11,6 +11,7 @@ shdb.readDir('/path/to/dir').then(filesArray => {
     //     stats: {statsObject},
     //     data: <buffer >
     // }
+    // and an array of directorys
 }).catch(err => {
     console.log(err)
 })
@@ -22,6 +23,7 @@ shdb.statsDir('/path/to/dir').then(filesArray => {
     //     linkPath: '/file.ext',
     //     stats: {statsObject},
     // }
+    // and an array of directorys
 }).catch(err => {
     console.log(err)
 })
