@@ -85,6 +85,66 @@ const readDir = mainPath => {
     })
 }
 
+const statsDir = mainPath => {
+    return new Promise((resolve, reject) => {
+        let files = []
+        readDirPromise(mainPath).then(dirInfo => {
+            let statArr = []
+            dirInfo.files.forEach((path, pathIndex) => {
+                statArr.push(statPromise(`${dirInfo['path']}/${path}`))
+            })
+            return Promise.all(statArr)
+        }).then(statInfo => {
+            let subDirectories = []
+            let readyToRead = true
+            statInfo.forEach((stat, statIndex) => {
+                if (stat.stats.isDirectory()) {
+                    subDirectories.push(stat.path)
+                } else if (stat.stats.isFile()) {
+                    if (mime.lookup(stat.path)) {
+                        files.push({ 'path': stat.path, 'linkPath': stat.path.replace(mainPath, ''), 'stats': stat.stats })
+                    } else {
+                        files.push({ 'path': stat.path, 'linkPath': stat.path.replace(mainPath, ''), 'stats': stat.stats })
+                    }
+                }
+            })
+            let readInterval = setInterval(() => {
+                if (subDirectories.length > 0 && readyToRead) {
+                    readyToRead = false
+                    readDirPromise(subDirectories.pop()).then(dirInfo => {
+                        let statArr = []
+                        dirInfo.files.forEach((path, pathIndex) => {
+                            statArr.push(statPromise(`${dirInfo['path']}/${path}`))
+                        })
+                        return Promise.all(statArr)
+                    }).then(statInfo => {
+                        statInfo.forEach((stat, statIndex) => {
+                            if (stat.stats.isDirectory()) {
+                                subDirectories.push(stat.path)
+                            } else if (stat.stats.isFile()) {
+                                if (mime.lookup(stat.path)) {
+                                    files.push({ 'path': stat.path, 'linkPath': stat.path.replace(mainPath, ''), 'stats': stat.stats })
+                                } else {
+                                    files.push({ 'path': stat.path, 'linkPath': stat.path.replace(mainPath, ''), 'stats': stat.stats })
+                                }
+                            }
+                        })
+                        readyToRead = true
+                    }).catch(err => {
+                        clearInterval(readInterval)
+                        reject(err)
+                    })
+                } else if (subDirectories.length === 0 && readyToRead) {
+                    clearInterval(readInterval)
+                    resolve(files)
+                }
+            }, 1)
+        }).catch(err => {
+            reject(err)
+        })
+    })
+}
+
 const cipherDir = (directory, password) => {
     return new Promise((resolve, reject) => {
         readDir(directory).then(files => {
@@ -239,6 +299,7 @@ const decompressFile = path => {
 }
 
 exports.readDir = readDir
+exports.statsDir = statsDir
 exports.cipherDir = cipherDir
 exports.decipherDir = decipherDir
 exports.readFile = readFile

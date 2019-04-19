@@ -15,6 +15,17 @@ shdb.readDir('/path/to/dir').then(filesArray => {
     console.log(err)
 })
 
+shdb.statsDir('/path/to/dir').then(filesArray => {
+    // an array of file objects that look like this
+    // {
+    //     path: '/path/to/dir/file.ext',
+    //     linkPath: '/file.ext',
+    //     stats: {statsObject},
+    // }
+}).catch(err => {
+    console.log(err)
+})
+
 shdb.cipherDir('/path/to/dir', 'aes256-password').then(finished => {
     // directory cipher is finished when this promise resolves
 }).catch(err => {
