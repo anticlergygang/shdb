@@ -3,27 +3,41 @@ https://discord.gg/RRHvYUe
 
 ```js
 shdb.readDir('/path/to/dir').then(filesArray => {
-    // an array of file objects that look like this
+    // an object of file and directory objects
     // {
-    //     path: '/path/to/dir/file.ext',
-    //     linkPath: '/file.ext',
-    //     type: 'file mime-type',
-    //     stats: {statsObject},
-    //     data: <buffer >
+    //     "/file.txt": {
+    //         path: '/path/to/dir/file.ext',
+    //         linkPath: '/file.ext',
+    //         type: 'file mime-type',
+    //         stats: {statsObject},
+    //         data: <buffer >
+    //     },
+    //     "/subdir": {
+    //         path: '/path/to/dir/subdir',
+    //         linkPath: '/subdir',
+    //         type: 'directory',
+    //         stats: {statsObject}
+    //     }
     // }
-    // and an array of directorys
 }).catch(err => {
     console.log(err)
 })
 
 shdb.statsDir('/path/to/dir').then(filesArray => {
-    // an array of file objects that look like this
+    // an object of file and directory objects
     // {
-    //     path: '/path/to/dir/file.ext',
-    //     linkPath: '/file.ext',
-    //     stats: {statsObject},
+    //     "/file.txt": {
+    //         path: '/path/to/dir/file.ext',
+    //         linkPath: '/file.ext'
+    //         stats: {statsObject}
+    //     },
+    //     "/subdir": {
+    //         path: '/path/to/dir/subdir',
+    //         linkPath: '/subdir',
+    //         type: 'directory',
+    //         stats: {statsObject}
+    //     }
     // }
-    // and an array of directorys
 }).catch(err => {
     console.log(err)
 })

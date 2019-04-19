@@ -79,7 +79,14 @@ const readDir = mainPath => {
                     })
                 } else if (subDirectories.length === 0 && readyToRead) {
                     clearInterval(readInterval)
-                    resolve({ files, directories })
+                    let data = {}
+                    files.forEach((file, fileIndex) => {
+                        data[file.linkPath] = file
+                    })
+                    directories.forEach((directory, directoryIndex) => {
+                        data[directory.linkPath] = directory
+                    })
+                    resolve(data)
                 }
             }, 1)
         }).catch(err => {
@@ -142,7 +149,14 @@ const statsDir = mainPath => {
                     })
                 } else if (subDirectories.length === 0 && readyToRead) {
                     clearInterval(readInterval)
-                    resolve({ files, directories })
+                    let data = {}
+                    files.forEach((file, fileIndex) => {
+                        data[file.linkPath] = file
+                    })
+                    directories.forEach((directory, directoryIndex) => {
+                        data[directory.linkPath] = directory
+                    })
+                    resolve(data)
                 }
             }, 1)
         }).catch(err => {
