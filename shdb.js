@@ -84,7 +84,7 @@ const readDir = mainPath => {
                         data[file.linkPath] = file
                     })
                     directories.forEach((directory, directoryIndex) => {
-                        data[directory.linkPath] = directory
+                        data[directory] = directory
                     })
                     resolve(data)
                 }
@@ -154,7 +154,7 @@ const statsDir = mainPath => {
                         data[file.linkPath] = file
                     })
                     directories.forEach((directory, directoryIndex) => {
-                        data[directory.linkPath] = directory
+                        data[directory] = directory
                     })
                     resolve(data)
                 }
