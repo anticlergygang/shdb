@@ -214,14 +214,14 @@ const decipherDir = (directory, password) => {
                         stream.on('finish', () => {
                             fs.unlink(files[fileKey].path, () => {
                                 count = count + 1
-                                if (count >= files.length) {
+                                if (count >= Object.keys(files).length) {
                                     resolve('finished')
                                 }
                             })
                         })
                     } else {
                         count = count + 1
-                        if (count >= files.length) {
+                        if (count >= Object.keys(files).length) {
                             resolve('finished')
                         }
                     }
