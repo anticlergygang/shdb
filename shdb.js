@@ -169,7 +169,7 @@ const statsDir = mainPath => {
 const cipherDir = (directory, password) => {
     return new Promise((resolve, reject) => {
         readDir(directory).then(files => {
-            let count = 1
+            let count = 0
             // console.log(new Date().getTime())
             Object.keys(files).forEach((fileKey, fileKeyIndex) => {
                 if (typeof files[fileKey] === 'object') {
@@ -181,14 +181,14 @@ const cipherDir = (directory, password) => {
                         stream.on('finish', () => {
                             fs.unlink(files[fileKey].path, () => {
                                 count = count + 1
-                                if (count === Object.keys(files).length) {
+                                if (count >= Object.keys(files).length) {
                                     resolve('finished')
                                 }
                             })
                         })
                     } else {
                         count = count + 1
-                        if (count === Object.keys(files).length) {
+                        if (count >= Object.keys(files).length) {
                             resolve('finished')
                         }
                     }
@@ -203,7 +203,7 @@ const cipherDir = (directory, password) => {
 const decipherDir = (directory, password) => {
     return new Promise((resolve, reject) => {
         readDir(directory).then(files => {
-            let count = 1
+            let count = 0
             Object.keys(files).forEach((fileKey, fileKeyIndex) => {
                 if (typeof files[fileKey] === 'object') {
                     if (files[fileKey].path.indexOf('.DS_Store') === -1 && files[fileKey].path.indexOf('.enc') !== -1) {
@@ -212,12 +212,11 @@ const decipherDir = (directory, password) => {
                         const output = fs.createWriteStream(files[fileKey].path.replace('.enc', ''))
                         let stream = input.pipe(decipher).pipe(output)
                         stream.on('finish', () => {
-                            fs.unlink(files[fileKey].path, () => {
-                                count = count + 1
-                                if (count >= Object.keys(files).length) {
-                                    resolve('finished')
-                                }
-                            })
+                            fs.unlinkSync(files[fileKey].path)
+                            count = count + 1
+                            if (count >= Object.keys(files).length) {
+                                resolve('finished')
+                            }
                         })
                     } else {
                         count = count + 1
