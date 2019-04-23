@@ -1,6 +1,7 @@
 const mime = require('mime-types')
 const lzma = require('lzma-native')
 const fs = require('fs')
+
 const readDirPromise = path => {
     return new Promise((resolve, reject) => {
         fs.readdir(path, (err, files) => {
@@ -170,24 +171,26 @@ const cipherDir = (directory, password) => {
         readDir(directory).then(files => {
             let count = 1
             // console.log(new Date().getTime())
-            files.forEach((file, fileIndex) => {
-                if (file.path.indexOf('.DS_Store') === -1) {
-                    const cipher = crypto.createCipher('aes256', password)
-                    const input = fs.createReadStream(file.path)
-                    const output = fs.createWriteStream(`${file.path}.enc`)
-                    let stream = input.pipe(cipher).pipe(output)
-                    stream.on('finish', () => {
-                        fs.unlink(file.path, () => {
-                            count = count + 1
-                            if (count === files.length) {
-                                resolve('finished')
-                            }
+            Object.keys(files).forEach((fileKey, fileKeyIndex) => {
+                if (typeof files[fileKey] === 'object') {
+                    if (files[fileKey].path.indexOf('.DS_Store') === -1) {
+                        const cipher = crypto.createCipher('aes256', password)
+                        const input = fs.createReadStream(files[fileKey].path)
+                        const output = fs.createWriteStream(`${files[fileKey].path}.enc`)
+                        let stream = input.pipe(cipher).pipe(output)
+                        stream.on('finish', () => {
+                            fs.unlink(files[fileKey].path, () => {
+                                count = count + 1
+                                if (count === files.length) {
+                                    resolve('finished')
+                                }
+                            })
                         })
-                    })
-                } else {
-                    count = count + 1
-                    if (count === files.length) {
-                        resolve('finished')
+                    } else {
+                        count = count + 1
+                        if (count === files.length) {
+                            resolve('finished')
+                        }
                     }
                 }
             })
@@ -201,24 +204,26 @@ const decipherDir = (directory, password) => {
     return new Promise((resolve, reject) => {
         readDir(directory).then(files => {
             let count = 1
-            files.forEach((file, fileIndex) => {
-                if (file.path.indexOf('.DS_Store') === -1 && file.path.indexOf('.enc') !== -1) {
-                    const decipher = crypto.createDecipher('aes256', password)
-                    const input = fs.createReadStream(file.path)
-                    const output = fs.createWriteStream(file.path.replace('.enc', ''))
-                    let stream = input.pipe(decipher).pipe(output)
-                    stream.on('finish', () => {
-                        fs.unlink(file.path, () => {
-                            count = count + 1
-                            if (count >= files.length) {
-                                resolve('finished')
-                            }
+            Object.keys(files).forEach((fileKey, fileKeyIndex) => {
+                if (typeof files[fileKey] === 'object') {
+                    if (files[fileKey].path.indexOf('.DS_Store') === -1 && files[fileKey].path.indexOf('.enc') !== -1) {
+                        const decipher = crypto.createDecipher('aes256', password)
+                        const input = fs.createReadStream(files[fileKey].path)
+                        const output = fs.createWriteStream(files[fileKey].path.replace('.enc', ''))
+                        let stream = input.pipe(decipher).pipe(output)
+                        stream.on('finish', () => {
+                            fs.unlink(files[fileKey].path, () => {
+                                count = count + 1
+                                if (count >= files.length) {
+                                    resolve('finished')
+                                }
+                            })
                         })
-                    })
-                } else {
-                    count = count + 1
-                    if (count >= files.length) {
-                        resolve('finished')
+                    } else {
+                        count = count + 1
+                        if (count >= files.length) {
+                            resolve('finished')
+                        }
                     }
                 }
             })
