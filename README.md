@@ -1,4 +1,4 @@
-# shdb: setHacked database - a database app with helpful functions to manipulate data
+# shdb: setHacked database - a database app.
 
 find a dev here if you need help: https://discord.gg/RRHvYUe
 
