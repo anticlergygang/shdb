@@ -272,6 +272,23 @@ const cipherFile = (path, password) => {
         }
     })
 }
+const decipherFile = (path, password) => {
+    return new Promise((resolve, reject) => {
+        try {
+            const decipher = crypto.createDecipher('aes256', password)
+            const input = fs.createReadStream(path)
+            const output = fs.createWriteStream(path.replace('.enc', ''))
+            let stream = input.pipe(decipher).pipe(output)
+            stream.on('finish', () => {
+                fs.unlink(path, () => {
+                    resolve('finished')
+                })
+            })
+        } catch (err) {
+            reject(err)
+        }
+    })
+}
 const compressFile = path => {
     return new Promise((resolve, reject) => {
         try {
@@ -286,23 +303,6 @@ const compressFile = path => {
                 })
             }).catch(err => {
                 reject(err)
-            })
-        } catch (err) {
-            reject(err)
-        }
-    })
-}
-const decipherFile = (path, password) => {
-    return new Promise((resolve, reject) => {
-        try {
-            const decipher = crypto.createDecipher('aes256', password)
-            const input = fs.createReadStream(path)
-            const output = fs.createWriteStream(path.replace('.enc', ''))
-            let stream = input.pipe(decipher).pipe(output)
-            stream.on('finish', () => {
-                fs.unlink(path, () => {
-                    resolve('finished')
-                })
             })
         } catch (err) {
             reject(err)
@@ -332,6 +332,6 @@ exports.decipherDir = decipherDir
 exports.readFile = readFile
 exports.statsFile = statsFile
 exports.cipherFile = cipherFile
-exports.compressFile = compressFile
 exports.decipherFile = decipherFile
+exports.compressFile = compressFile
 exports.decompressFile = decompressFile
