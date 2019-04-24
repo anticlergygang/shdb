@@ -3,52 +3,52 @@
 find a dev here if you need help: https://discord.gg/RRHvYUe
 
 ```js
-readDir(mainPath).then(output => {
+readDir(directoryPath).then(output => {
     console.log(output)
 }).catch(err => {
     console.log(err)
 })
-statsDir(mainPath).then(output => {
+statsDir(directoryPath).then(output => {
     console.log(output)
 }).catch(err => {
     console.log(err)
 })
-cipherDir(directory, password).then(output => {
+cipherDir(directoryPath, password).then(output => {
     console.log(output)
 }).catch(err => {
     console.log(err)
 })
-decipherDir(directory, password).then(output => {
+decipherDir(directoryPath, password).then(output => {
     console.log(output)
 }).catch(err => {
     console.log(err)
 })
-readFile(path).then(output => {
+readFile(filePath).then(output => {
     console.log(output)
 }).catch(err => {
     console.log(err)
 })
-statsFile(path).then(output => {
+statsFile(filePath).then(output => {
     console.log(output)
 }).catch(err => {
     console.log(err)
 })
-cipherFile(path, password).then(output => {
+cipherFile(filePath, password).then(output => {
     console.log(output)
 }).catch(err => {
     console.log(err)
 })
-compressFile(path).then(output => {
+compressFile(filePath).then(output => {
     console.log(output)
 }).catch(err => {
     console.log(err)
 })
-decipherFile(path, password).then(output => {
+decipherFile(filePath, password).then(output => {
     console.log(output)
 }).catch(err => {
     console.log(err)
 })
-decompressFile(path).then(output => {
+decompressFile(filePath).then(output => {
     console.log(output)
 }).catch(err => {
     console.log(err)
