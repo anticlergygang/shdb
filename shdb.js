@@ -1,7 +1,6 @@
 const mime = require('mime-types')
 const lzma = require('lzma-native')
 const fs = require('fs')
-
 const readDirPromise = path => {
     return new Promise((resolve, reject) => {
         fs.readdir(path, (err, files) => {
@@ -13,7 +12,6 @@ const readDirPromise = path => {
         })
     })
 }
-
 const statPromise = path => {
     return new Promise((resolve, reject) => {
         fs.stat(path, (err, stats) => {
@@ -25,7 +23,6 @@ const statPromise = path => {
         })
     })
 }
-
 const readDir = mainPath => {
     return new Promise((resolve, reject) => {
         let files = []
@@ -95,7 +92,6 @@ const readDir = mainPath => {
         })
     })
 }
-
 const statsDir = mainPath => {
     return new Promise((resolve, reject) => {
         let files = []
@@ -165,7 +161,6 @@ const statsDir = mainPath => {
         })
     })
 }
-
 const cipherDir = (directory, password) => {
     return new Promise((resolve, reject) => {
         readDir(directory).then(files => {
@@ -199,7 +194,6 @@ const cipherDir = (directory, password) => {
         })
     })
 }
-
 const decipherDir = (directory, password) => {
     return new Promise((resolve, reject) => {
         readDir(directory).then(files => {
@@ -231,7 +225,6 @@ const decipherDir = (directory, password) => {
         })
     })
 }
-
 const readFile = path => {
     return new Promise((resolve, reject) => {
         statPromise(path).then(stat => {
@@ -247,7 +240,21 @@ const readFile = path => {
         })
     })
 }
-
+const statsFile = path => {
+    return new Promise((resolve, reject) => {
+        statPromise(path).then(stat => {
+            if (stat.stats.isFile()) {
+                if (mime.lookup(stat.path)) {
+                    resolve({ 'path': stat.path, 'linkPath': stat.path.replace(path, ''), 'type': mime.lookup(stat.path), 'stats': stat.stats })
+                } else {
+                    resolve({ 'path': stat.path, 'linkPath': stat.path.replace(path, ''), 'type': 'unknown', 'stats': stat.stats })
+                }
+            }
+        }).catch(err => {
+            // console.log(err)
+        })
+    })
+}
 const cipherFile = (path, password) => {
     return new Promise((resolve, reject) => {
         try {
@@ -265,7 +272,6 @@ const cipherFile = (path, password) => {
         }
     })
 }
-
 const compressFile = path => {
     return new Promise((resolve, reject) => {
         try {
@@ -286,7 +292,6 @@ const compressFile = path => {
         }
     })
 }
-
 const decipherFile = (path, password) => {
     return new Promise((resolve, reject) => {
         try {
@@ -304,7 +309,6 @@ const decipherFile = (path, password) => {
         }
     })
 }
-
 const decompressFile = path => {
     return new Promise((resolve, reject) => {
         try {
@@ -321,12 +325,12 @@ const decompressFile = path => {
         }
     })
 }
-
 exports.readDir = readDir
 exports.statsDir = statsDir
 exports.cipherDir = cipherDir
 exports.decipherDir = decipherDir
 exports.readFile = readFile
+exports.statsFile = statsFile
 exports.cipherFile = cipherFile
 exports.compressFile = compressFile
 exports.decipherFile = decipherFile
