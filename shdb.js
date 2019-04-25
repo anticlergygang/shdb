@@ -29,7 +29,7 @@ const statPromise = path => {
 const readDir = mainPath => {
     return new Promise((resolve, reject) => {
         let files = []
-        let directories = [mainPath]
+        exports.database['/'] = { 'path': stat.path, 'linkPath': '/', 'stats': stat.stats, type: 'directory' }
         readDirPromise(mainPath).then(dirInfo => {
             let statArr = []
             dirInfo.files.forEach((path, pathIndex) => {
@@ -44,7 +44,7 @@ const readDir = mainPath => {
                     if (Object.keys(exports.database).indexOf(stat.path.replace(mainPath, '')) !== -1) {
                         if (stat.stats.mtime > exports.database[stat.path.replace(mainPath, '')].stats.mtime) {
                             if (stat.stats.isDirectory()) {
-                                exports.database[stat.path.replace(mainPath, '') || '/'] = { 'path': stat.path, 'linkPath': stat.path.replace(mainPath, ''), 'stats': stat.stats }
+                                exports.database[stat.path.replace(mainPath, '') || '/'] = { 'path': stat.path, 'linkPath': stat.path.replace(mainPath, ''), 'stats': stat.stats, type: 'directory' }
                                 subDirectories.push(stat.path)
                             } else if (stat.stats.isFile()) {
                                 if (mime.lookup(stat.path)) {
@@ -54,11 +54,11 @@ const readDir = mainPath => {
                                 }
                             }
                         } else {
-
+                            //ignore file/directory
                         }
                     } else {
                         if (stat.stats.isDirectory()) {
-                            exports.database[stat.path.replace(mainPath, '') || '/'] = { 'path': stat.path, 'linkPath': stat.path.replace(mainPath, ''), 'stats': stat.stats }
+                            exports.database[stat.path.replace(mainPath, '') || '/'] = { 'path': stat.path, 'linkPath': stat.path.replace(mainPath, ''), 'stats': stat.stats, type: 'directory' }
                             subDirectories.push(stat.path)
                         } else if (stat.stats.isFile()) {
                             if (mime.lookup(stat.path)) {
@@ -70,7 +70,7 @@ const readDir = mainPath => {
                     }
                 } else {
                     if (stat.stats.isDirectory()) {
-                        exports.database[stat.path.replace(mainPath, '') || '/'] = { 'path': stat.path, 'linkPath': stat.path.replace(mainPath, ''), 'stats': stat.stats }
+                        exports.database[stat.path.replace(mainPath, '') || '/'] = { 'path': stat.path, 'linkPath': stat.path.replace(mainPath, ''), 'stats': stat.stats, type: 'directory' }
                         subDirectories.push(stat.path)
                     } else if (stat.stats.isFile()) {
                         if (mime.lookup(stat.path)) {
@@ -96,7 +96,7 @@ const readDir = mainPath => {
                                 if (Object.keys(exports.database).indexOf(stat.path.replace(mainPath, '')) !== -1) {
                                     if (stat.stats.mtime > exports.database[stat.path.replace(mainPath, '')].stats.mtime) {
                                         if (stat.stats.isDirectory()) {
-                                            exports.database[stat.path.replace(mainPath, '') || '/'] = { 'path': stat.path, 'linkPath': stat.path.replace(mainPath, ''), 'stats': stat.stats }
+                                            exports.database[stat.path.replace(mainPath, '') || '/'] = { 'path': stat.path, 'linkPath': stat.path.replace(mainPath, ''), 'stats': stat.stats, type: 'directory' }
                                             subDirectories.push(stat.path)
                                         } else if (stat.stats.isFile()) {
                                             if (mime.lookup(stat.path)) {
@@ -106,11 +106,11 @@ const readDir = mainPath => {
                                             }
                                         }
                                     } else {
-
+                                        //ignore file/directory
                                     }
                                 } else {
                                     if (stat.stats.isDirectory()) {
-                                        exports.database[stat.path.replace(mainPath, '') || '/'] = { 'path': stat.path, 'linkPath': stat.path.replace(mainPath, ''), 'stats': stat.stats }
+                                        exports.database[stat.path.replace(mainPath, '') || '/'] = { 'path': stat.path, 'linkPath': stat.path.replace(mainPath, ''), 'stats': stat.stats, type: 'directory' }
                                         subDirectories.push(stat.path)
                                     } else if (stat.stats.isFile()) {
                                         if (mime.lookup(stat.path)) {
@@ -122,7 +122,7 @@ const readDir = mainPath => {
                                 }
                             } else {
                                 if (stat.stats.isDirectory()) {
-                                    exports.database[stat.path.replace(mainPath, '') || '/'] = { 'path': stat.path, 'linkPath': stat.path.replace(mainPath, ''), 'stats': stat.stats }
+                                    exports.database[stat.path.replace(mainPath, '') || '/'] = { 'path': stat.path, 'linkPath': stat.path.replace(mainPath, ''), 'stats': stat.stats, type: 'directory' }
                                     subDirectories.push(stat.path)
                                 } else if (stat.stats.isFile()) {
                                     if (mime.lookup(stat.path)) {
@@ -140,14 +140,6 @@ const readDir = mainPath => {
                     })
                 } else if (subDirectories.length === 0 && readyToRead) {
                     clearInterval(readInterval)
-                    let data = {}
-                    files.forEach((file, fileIndex) => {
-                        data[file.linkPath] = file
-                    })
-                    directories.forEach((directory, directoryIndex) => {
-                        data[directory.linkPath || '/'] = directory
-                    })
-
                     resolve('finished')
                 }
             }, 1)

@@ -3,53 +3,27 @@
 find a dev here if you need help: https://discord.gg/RRHvYUe
 
 ```js
-readDir(directoryPath).then(output => {
-    console.log(output)
-}).catch(err => {
-    console.log(err)
-})
-statsDir(directoryPath).then(output => {
-    console.log(output)
-}).catch(err => {
-    console.log(err)
-})
-cipherDir(directoryPath, password).then(output => {
-    console.log(output)
-}).catch(err => {
-    console.log(err)
-})
-decipherDir(directoryPath, password).then(output => {
-    console.log(output)
-}).catch(err => {
-    console.log(err)
-})
-readFile(filePath).then(output => {
-    console.log(output)
-}).catch(err => {
-    console.log(err)
-})
-statsFile(filePath).then(output => {
-    console.log(output)
-}).catch(err => {
-    console.log(err)
-})
-cipherFile(filePath, password).then(output => {
-    console.log(output)
-}).catch(err => {
-    console.log(err)
-})
-compressFile(filePath).then(output => {
-    console.log(output)
-}).catch(err => {
-    console.log(err)
-})
-decipherFile(filePath, password).then(output => {
-    console.log(output)
-}).catch(err => {
-    console.log(err)
-})
-decompressFile(filePath).then(output => {
-    console.log(output)
+let shdb = require('shdb')
+
+shdb.readDir('/path/to/data/directory').then(success => {
+    console.log(success) // this will just say finished.
+    console.log(shdb.database) // this will output all directories and files found under your data directory
+    // if you want your database to update on file changes as they come in, you can do something like this
+    let watched = []
+    let trackDir = () => {
+        Object.keys(shdb.database).forEach(databaseKey => {
+        if(shdb.database[databaseKey].type === 'directory' && watched.indexOf(databaseKey) === -1){
+            watched.push(databaseKey)
+            fs.watch(shdb.database[databaseKey], ()=>{
+                shdb.readDir('/path/to/data/directory').then(success => {
+                    trackDir()    
+                }).catch(err => {
+                    console.log(err)
+                })
+            })
+        }
+    })
+    }
 }).catch(err => {
     console.log(err)
 })
