@@ -5,25 +5,26 @@ find a dev here if you need help: https://discord.gg/RRHvYUe
 ```js
 let shdb = require('shdb')
 
-shdb.readDir('/path/to/data/directory').then(success => {
+shdb.readDir(`${process.cwd()}/database`).then(success => {
     console.log(success) // this will just say finished.
     console.log(shdb.database) // this will output all directories and files found under your data directory
     // if you want your database to update on file changes as they come in, you can do something like this
     let watched = []
     let trackDir = () => {
         Object.keys(shdb.database).forEach(databaseKey => {
-        if(shdb.database[databaseKey].type === 'directory' && watched.indexOf(databaseKey) === -1){
-            watched.push(databaseKey)
-            fs.watch(shdb.database[databaseKey], ()=>{
-                shdb.readDir('/path/to/data/directory').then(success => {
-                    trackDir()    
-                }).catch(err => {
-                    console.log(err)
+            if (shdb.database[databaseKey].type === 'directory' && watched.indexOf(databaseKey) === -1) {
+                watched.push(databaseKey)
+                fs.watch(shdb.database[databaseKey].path, (eventType, filename) => {
+                    shdb.readDir(`${process.cwd()}/database`).then(success => {
+                        trackDir()
+                    }).catch(err => {
+                        console.log(err)
+                    })
                 })
-            })
-        }
-    })
+            }
+        })
     }
+    trackDir()
 }).catch(err => {
     console.log(err)
 })
