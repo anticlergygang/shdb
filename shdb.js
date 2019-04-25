@@ -29,9 +29,8 @@ const statPromise = path => {
 const readDir = mainPath => {
     return new Promise((resolve, reject) => {
         let files = []
-        exports.database['/'] = { 'path': stat.path, 'linkPath': '/', 'stats': stat.stats, type: 'directory' }
         readDirPromise(mainPath).then(dirInfo => {
-            let statArr = []
+            let statArr = [statPromise(mainPath)]
             dirInfo.files.forEach((path, pathIndex) => {
                 statArr.push(statPromise(`${dirInfo['path']}/${path}`))
             })
