@@ -145,7 +145,7 @@ const readDir = mainPath => {
                         data[file.linkPath] = file
                     })
                     directories.forEach((directory, directoryIndex) => {
-                        data[directory.linkPath] = directory
+                        data[directory.linkPath||'/'] = directory
                     })
                     exports.database = data
                     resolve('finished')
@@ -275,7 +275,7 @@ const statsDir = mainPath => {
                         data[file.linkPath] = file
                     })
                     directories.forEach((directory, directoryIndex) => {
-                        data[directory.linkPath] = directory
+                        data[directory.linkPath||'/'] = directory
                     })
                     exports.database = data
                     resolve('finished')
