@@ -44,7 +44,7 @@ const readDir = mainPath => {
                     if (Object.keys(exports.database).indexOf(stat.path.replace(mainPath, '')) !== -1) {
                         if (stat.stats.mtime > exports.database[stat.path.replace(mainPath, '')].stats.mtime) {
                             if (stat.stats.isDirectory()) {
-                                directories.push({ 'path': stat.path, 'linkPath': stat.path.replace(mainPath, ''), 'stats': stat.stats })
+                                directories.push({ 'path': stat.path, 'linkPath': stat.path.replace(mainPath, '')||'/', 'stats': stat.stats })
                                 subDirectories.push(stat.path)
                             } else if (stat.stats.isFile()) {
                                 if (mime.lookup(stat.path)) {
@@ -55,7 +55,7 @@ const readDir = mainPath => {
                             }
                         } else {
                             if (stat.stats.isDirectory()) {
-                                directories.push({ 'path': stat.path, 'linkPath': stat.path.replace(mainPath, ''), 'stats': stat.stats })
+                                directories.push({ 'path': stat.path, 'linkPath': stat.path.replace(mainPath, '')||'/', 'stats': stat.stats })
                                 subDirectories.push(stat.path)
                             } else if (stat.stats.isFile()) {
                                 if (mime.lookup(stat.path)) {
@@ -70,7 +70,7 @@ const readDir = mainPath => {
                     }
                 } else {
                     if (stat.stats.isDirectory()) {
-                        directories.push({ 'path': stat.path, 'linkPath': stat.path.replace(mainPath, ''), 'stats': stat.stats })
+                        directories.push({ 'path': stat.path, 'linkPath': stat.path.replace(mainPath, '')||'/', 'stats': stat.stats })
                         subDirectories.push(stat.path)
                     } else if (stat.stats.isFile()) {
                         if (mime.lookup(stat.path)) {
@@ -96,7 +96,7 @@ const readDir = mainPath => {
                                 if (Object.keys(exports.database).indexOf(stat.path.replace(mainPath, '')) !== -1) {
                                     if (stat.stats.mtime > exports.database[stat.path.replace(mainPath, '')].stats.mtime) {
                                         if (stat.stats.isDirectory()) {
-                                            directories.push({ 'path': stat.path, 'linkPath': stat.path.replace(mainPath, ''), 'stats': stat.stats })
+                                            directories.push({ 'path': stat.path, 'linkPath': stat.path.replace(mainPath, '')||'/', 'stats': stat.stats })
                                             subDirectories.push(stat.path)
                                         } else if (stat.stats.isFile()) {
                                             if (mime.lookup(stat.path)) {
@@ -107,7 +107,7 @@ const readDir = mainPath => {
                                         }
                                     } else {
                                         if (stat.stats.isDirectory()) {
-                                            directories.push({ 'path': stat.path, 'linkPath': stat.path.replace(mainPath, ''), 'stats': stat.stats })
+                                            directories.push({ 'path': stat.path, 'linkPath': stat.path.replace(mainPath, '')||'/', 'stats': stat.stats })
                                             subDirectories.push(stat.path)
                                         } else if (stat.stats.isFile()) {
                                             if (mime.lookup(stat.path)) {
@@ -122,7 +122,7 @@ const readDir = mainPath => {
                                 }
                             } else {
                                 if (stat.stats.isDirectory()) {
-                                    directories.push({ 'path': stat.path, 'linkPath': stat.path.replace(mainPath, ''), 'stats': stat.stats })
+                                    directories.push({ 'path': stat.path, 'linkPath': stat.path.replace(mainPath, '')||'/', 'stats': stat.stats })
                                     subDirectories.push(stat.path)
                                 } else if (stat.stats.isFile()) {
                                     if (mime.lookup(stat.path)) {
@@ -174,7 +174,7 @@ const statsDir = mainPath => {
                     if (Object.keys(exports.database).indexOf(stat.path.replace(mainPath, '')) !== -1) {
                         if (stat.stats.mtime > exports.database[stat.path.replace(mainPath, '')].stats.mtime) {
                             if (stat.stats.isDirectory()) {
-                                directories.push({ 'path': stat.path, 'linkPath': stat.path.replace(mainPath, ''), 'stats': stat.stats })
+                                directories.push({ 'path': stat.path, 'linkPath': stat.path.replace(mainPath, '')||'/', 'stats': stat.stats })
                                 subDirectories.push(stat.path)
                             } else if (stat.stats.isFile()) {
                                 if (mime.lookup(stat.path)) {
@@ -185,7 +185,7 @@ const statsDir = mainPath => {
                             }
                         } else {
                             if (stat.stats.isDirectory()) {
-                                directories.push({ 'path': stat.path, 'linkPath': stat.path.replace(mainPath, ''), 'stats': stat.stats })
+                                directories.push({ 'path': stat.path, 'linkPath': stat.path.replace(mainPath, '')||'/', 'stats': stat.stats })
                                 subDirectories.push(stat.path)
                             } else if (stat.stats.isFile()) {
                                 if (mime.lookup(stat.path)) {
@@ -200,7 +200,7 @@ const statsDir = mainPath => {
                     }
                 } else {
                     if (stat.stats.isDirectory()) {
-                        directories.push({ 'path': stat.path, 'linkPath': stat.path.replace(mainPath, ''), 'stats': stat.stats })
+                        directories.push({ 'path': stat.path, 'linkPath': stat.path.replace(mainPath, '')||'/', 'stats': stat.stats })
                         subDirectories.push(stat.path)
                     } else if (stat.stats.isFile()) {
                         if (mime.lookup(stat.path)) {
@@ -226,7 +226,7 @@ const statsDir = mainPath => {
                                 if (Object.keys(exports.database).indexOf(stat.path.replace(mainPath, '')) !== -1) {
                                     if (stat.stats.mtime > exports.database[stat.path.replace(mainPath, '')].stats.mtime) {
                                         if (stat.stats.isDirectory()) {
-                                            directories.push({ 'path': stat.path, 'linkPath': stat.path.replace(mainPath, ''), 'stats': stat.stats })
+                                            directories.push({ 'path': stat.path, 'linkPath': stat.path.replace(mainPath, '')||'/', 'stats': stat.stats })
                                             subDirectories.push(stat.path)
                                         } else if (stat.stats.isFile()) {
                                             if (mime.lookup(stat.path)) {
@@ -237,7 +237,7 @@ const statsDir = mainPath => {
                                         }
                                     } else {
                                         if (stat.stats.isDirectory()) {
-                                            directories.push({ 'path': stat.path, 'linkPath': stat.path.replace(mainPath, ''), 'stats': stat.stats })
+                                            directories.push({ 'path': stat.path, 'linkPath': stat.path.replace(mainPath, '')||'/', 'stats': stat.stats })
                                             subDirectories.push(stat.path)
                                         } else if (stat.stats.isFile()) {
                                             if (mime.lookup(stat.path)) {
@@ -252,7 +252,7 @@ const statsDir = mainPath => {
                                 }
                             } else {
                                 if (stat.stats.isDirectory()) {
-                                    directories.push({ 'path': stat.path, 'linkPath': stat.path.replace(mainPath, ''), 'stats': stat.stats })
+                                    directories.push({ 'path': stat.path, 'linkPath': stat.path.replace(mainPath, '')||'/', 'stats': stat.stats })
                                     subDirectories.push(stat.path)
                                 } else if (stat.stats.isFile()) {
                                     if (mime.lookup(stat.path)) {
