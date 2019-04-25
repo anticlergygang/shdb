@@ -1,6 +1,9 @@
 const mime = require('mime-types')
 const lzma = require('lzma-native')
 const fs = require('fs')
+
+let database = {}
+
 const readDirPromise = path => {
     return new Promise((resolve, reject) => {
         fs.readdir(path, (err, files) => {
@@ -37,14 +40,44 @@ const readDir = mainPath => {
             let subDirectories = []
             let readyToRead = true
             statInfo.forEach((stat, statIndex) => {
-                if (stat.stats.isDirectory()) {
-                    directories.push(stat.path)
-                    subDirectories.push(stat.path)
-                } else if (stat.stats.isFile()) {
-                    if (mime.lookup(stat.path)) {
-                        files.push({ 'path': stat.path, 'linkPath': stat.path.replace(mainPath, ''), 'type': mime.lookup(stat.path), 'stats': stat.stats, 'data': fs.readFileSync(stat.path) })
+                if (exports.database !== {}) {
+                    if (Object.keys(exports.database).indexOf(stat.path.replace(mainPath, '')) !== -1) {
+                        if (stat.stats.mtime > exports.database[stat.path.replace(mainPath, '')].stats.mtime) {
+                            if (stat.stats.isDirectory()) {
+                                directories.push({ 'path': stat.path, 'linkPath': stat.path.replace(mainPath, ''), 'stats': stat.stats })
+                                subDirectories.push(stat.path)
+                            } else if (stat.stats.isFile()) {
+                                if (mime.lookup(stat.path)) {
+                                    files.push({ 'path': stat.path, 'linkPath': stat.path.replace(mainPath, ''), 'type': mime.lookup(stat.path), 'stats': stat.stats, 'data': fs.readFileSync(stat.path) })
+                                } else {
+                                    files.push({ 'path': stat.path, 'linkPath': stat.path.replace(mainPath, ''), 'type': 'unknown', 'stats': stat.stats, 'data': fs.readFileSync(stat.path) })
+                                }
+                            }
+                        } else {
+                            if (stat.stats.isDirectory()) {
+                                directories.push({ 'path': stat.path, 'linkPath': stat.path.replace(mainPath, ''), 'stats': stat.stats })
+                                subDirectories.push(stat.path)
+                            } else if (stat.stats.isFile()) {
+                                if (mime.lookup(stat.path)) {
+                                    files.push({ 'path': stat.path, 'linkPath': stat.path.replace(mainPath, ''), 'type': mime.lookup(stat.path), 'stats': stat.stats, 'data': fs.readFileSync(stat.path) })
+                                } else {
+                                    files.push({ 'path': stat.path, 'linkPath': stat.path.replace(mainPath, ''), 'type': 'unknown', 'stats': stat.stats, 'data': fs.readFileSync(stat.path) })
+                                }
+                            }
+                        }
                     } else {
-                        files.push({ 'path': stat.path, 'linkPath': stat.path.replace(mainPath, ''), 'type': 'unknown', 'stats': stat.stats, 'data': fs.readFileSync(stat.path) })
+                        //ignore file?
+                    }
+                } else {
+                    if (stat.stats.isDirectory()) {
+                        directories.push({ 'path': stat.path, 'linkPath': stat.path.replace(mainPath, ''), 'stats': stat.stats })
+                        subDirectories.push(stat.path)
+                    } else if (stat.stats.isFile()) {
+                        if (mime.lookup(stat.path)) {
+                            files.push({ 'path': stat.path, 'linkPath': stat.path.replace(mainPath, ''), 'type': mime.lookup(stat.path), 'stats': stat.stats, 'data': fs.readFileSync(stat.path) })
+                        } else {
+                            files.push({ 'path': stat.path, 'linkPath': stat.path.replace(mainPath, ''), 'type': 'unknown', 'stats': stat.stats, 'data': fs.readFileSync(stat.path) })
+                        }
                     }
                 }
             })
@@ -59,14 +92,44 @@ const readDir = mainPath => {
                         return Promise.all(statArr)
                     }).then(statInfo => {
                         statInfo.forEach((stat, statIndex) => {
-                            if (stat.stats.isDirectory()) {
-                                directories.push(stat.path)
-                                subDirectories.push(stat.path)
-                            } else if (stat.stats.isFile()) {
-                                if (mime.lookup(stat.path)) {
-                                    files.push({ 'path': stat.path, 'linkPath': stat.path.replace(mainPath, ''), 'type': mime.lookup(stat.path), 'stats': stat.stats, 'data': fs.readFileSync(stat.path) })
+                            if (exports.database !== {}) {
+                                if (Object.keys(exports.database).indexOf(stat.path.replace(mainPath, '')) !== -1) {
+                                    if (stat.stats.mtime > exports.database[stat.path.replace(mainPath, '')].stats.mtime) {
+                                        if (stat.stats.isDirectory()) {
+                                            directories.push({ 'path': stat.path, 'linkPath': stat.path.replace(mainPath, ''), 'stats': stat.stats })
+                                            subDirectories.push(stat.path)
+                                        } else if (stat.stats.isFile()) {
+                                            if (mime.lookup(stat.path)) {
+                                                files.push({ 'path': stat.path, 'linkPath': stat.path.replace(mainPath, ''), 'type': mime.lookup(stat.path), 'stats': stat.stats, 'data': fs.readFileSync(stat.path) })
+                                            } else {
+                                                files.push({ 'path': stat.path, 'linkPath': stat.path.replace(mainPath, ''), 'type': 'unknown', 'stats': stat.stats, 'data': fs.readFileSync(stat.path) })
+                                            }
+                                        }
+                                    } else {
+                                        if (stat.stats.isDirectory()) {
+                                            directories.push({ 'path': stat.path, 'linkPath': stat.path.replace(mainPath, ''), 'stats': stat.stats })
+                                            subDirectories.push(stat.path)
+                                        } else if (stat.stats.isFile()) {
+                                            if (mime.lookup(stat.path)) {
+                                                files.push({ 'path': stat.path, 'linkPath': stat.path.replace(mainPath, ''), 'type': mime.lookup(stat.path), 'stats': stat.stats, 'data': fs.readFileSync(stat.path) })
+                                            } else {
+                                                files.push({ 'path': stat.path, 'linkPath': stat.path.replace(mainPath, ''), 'type': 'unknown', 'stats': stat.stats, 'data': fs.readFileSync(stat.path) })
+                                            }
+                                        }
+                                    }
                                 } else {
-                                    files.push({ 'path': stat.path, 'linkPath': stat.path.replace(mainPath, ''), 'type': 'unknown', 'stats': stat.stats, 'data': fs.readFileSync(stat.path) })
+                                    //ignore file?
+                                }
+                            } else {
+                                if (stat.stats.isDirectory()) {
+                                    directories.push({ 'path': stat.path, 'linkPath': stat.path.replace(mainPath, ''), 'stats': stat.stats })
+                                    subDirectories.push(stat.path)
+                                } else if (stat.stats.isFile()) {
+                                    if (mime.lookup(stat.path)) {
+                                        files.push({ 'path': stat.path, 'linkPath': stat.path.replace(mainPath, ''), 'type': mime.lookup(stat.path), 'stats': stat.stats, 'data': fs.readFileSync(stat.path) })
+                                    } else {
+                                        files.push({ 'path': stat.path, 'linkPath': stat.path.replace(mainPath, ''), 'type': 'unknown', 'stats': stat.stats, 'data': fs.readFileSync(stat.path) })
+                                    }
                                 }
                             }
                         })
@@ -82,9 +145,10 @@ const readDir = mainPath => {
                         data[file.linkPath] = file
                     })
                     directories.forEach((directory, directoryIndex) => {
-                        data[directory] = directory
+                        data[directory.linkPath] = directory
                     })
-                    resolve(data)
+                    exports.database = data
+                    resolve('finished')
                 }
             }, 1)
         }).catch(err => {
@@ -106,14 +170,44 @@ const statsDir = mainPath => {
             let subDirectories = []
             let readyToRead = true
             statInfo.forEach((stat, statIndex) => {
-                if (stat.stats.isDirectory()) {
-                    directories.push(stat.path)
-                    subDirectories.push(stat.path)
-                } else if (stat.stats.isFile()) {
-                    if (mime.lookup(stat.path)) {
-                        files.push({ 'path': stat.path, 'linkPath': stat.path.replace(mainPath, ''), 'stats': stat.stats })
+                if (exports.database !== {}) {
+                    if (Object.keys(exports.database).indexOf(stat.path.replace(mainPath, '')) !== -1) {
+                        if (stat.stats.mtime > exports.database[stat.path.replace(mainPath, '')].stats.mtime) {
+                            if (stat.stats.isDirectory()) {
+                                directories.push({ 'path': stat.path, 'linkPath': stat.path.replace(mainPath, ''), 'stats': stat.stats })
+                                subDirectories.push(stat.path)
+                            } else if (stat.stats.isFile()) {
+                                if (mime.lookup(stat.path)) {
+                                    files.push({ 'path': stat.path, 'linkPath': stat.path.replace(mainPath, ''), 'type': mime.lookup(stat.path), 'stats': stat.stats, 'data': fs.readFileSync(stat.path) })
+                                } else {
+                                    files.push({ 'path': stat.path, 'linkPath': stat.path.replace(mainPath, ''), 'type': 'unknown', 'stats': stat.stats, 'data': fs.readFileSync(stat.path) })
+                                }
+                            }
+                        } else {
+                            if (stat.stats.isDirectory()) {
+                                directories.push({ 'path': stat.path, 'linkPath': stat.path.replace(mainPath, ''), 'stats': stat.stats })
+                                subDirectories.push(stat.path)
+                            } else if (stat.stats.isFile()) {
+                                if (mime.lookup(stat.path)) {
+                                    files.push({ 'path': stat.path, 'linkPath': stat.path.replace(mainPath, ''), 'type': mime.lookup(stat.path), 'stats': stat.stats, 'data': fs.readFileSync(stat.path) })
+                                } else {
+                                    files.push({ 'path': stat.path, 'linkPath': stat.path.replace(mainPath, ''), 'type': 'unknown', 'stats': stat.stats, 'data': fs.readFileSync(stat.path) })
+                                }
+                            }
+                        }
                     } else {
-                        files.push({ 'path': stat.path, 'linkPath': stat.path.replace(mainPath, ''), 'stats': stat.stats })
+                        //ignore file?
+                    }
+                } else {
+                    if (stat.stats.isDirectory()) {
+                        directories.push({ 'path': stat.path, 'linkPath': stat.path.replace(mainPath, ''), 'stats': stat.stats })
+                        subDirectories.push(stat.path)
+                    } else if (stat.stats.isFile()) {
+                        if (mime.lookup(stat.path)) {
+                            files.push({ 'path': stat.path, 'linkPath': stat.path.replace(mainPath, ''), 'stats': stat.stats })
+                        } else {
+                            files.push({ 'path': stat.path, 'linkPath': stat.path.replace(mainPath, ''), 'stats': stat.stats })
+                        }
                     }
                 }
             })
@@ -128,14 +222,44 @@ const statsDir = mainPath => {
                         return Promise.all(statArr)
                     }).then(statInfo => {
                         statInfo.forEach((stat, statIndex) => {
-                            if (stat.stats.isDirectory()) {
-                                directories.push(stat.path)
-                                subDirectories.push(stat.path)
-                            } else if (stat.stats.isFile()) {
-                                if (mime.lookup(stat.path)) {
-                                    files.push({ 'path': stat.path, 'linkPath': stat.path.replace(mainPath, ''), 'stats': stat.stats })
+                            if (exports.database !== {}) {
+                                if (Object.keys(exports.database).indexOf(stat.path.replace(mainPath, '')) !== -1) {
+                                    if (stat.stats.mtime > exports.database[stat.path.replace(mainPath, '')].stats.mtime) {
+                                        if (stat.stats.isDirectory()) {
+                                            directories.push({ 'path': stat.path, 'linkPath': stat.path.replace(mainPath, ''), 'stats': stat.stats })
+                                            subDirectories.push(stat.path)
+                                        } else if (stat.stats.isFile()) {
+                                            if (mime.lookup(stat.path)) {
+                                                files.push({ 'path': stat.path, 'linkPath': stat.path.replace(mainPath, ''), 'type': mime.lookup(stat.path), 'stats': stat.stats, 'data': fs.readFileSync(stat.path) })
+                                            } else {
+                                                files.push({ 'path': stat.path, 'linkPath': stat.path.replace(mainPath, ''), 'type': 'unknown', 'stats': stat.stats, 'data': fs.readFileSync(stat.path) })
+                                            }
+                                        }
+                                    } else {
+                                        if (stat.stats.isDirectory()) {
+                                            directories.push({ 'path': stat.path, 'linkPath': stat.path.replace(mainPath, ''), 'stats': stat.stats })
+                                            subDirectories.push(stat.path)
+                                        } else if (stat.stats.isFile()) {
+                                            if (mime.lookup(stat.path)) {
+                                                files.push({ 'path': stat.path, 'linkPath': stat.path.replace(mainPath, ''), 'type': mime.lookup(stat.path), 'stats': stat.stats, 'data': fs.readFileSync(stat.path) })
+                                            } else {
+                                                files.push({ 'path': stat.path, 'linkPath': stat.path.replace(mainPath, ''), 'type': 'unknown', 'stats': stat.stats, 'data': fs.readFileSync(stat.path) })
+                                            }
+                                        }
+                                    }
                                 } else {
-                                    files.push({ 'path': stat.path, 'linkPath': stat.path.replace(mainPath, ''), 'stats': stat.stats })
+                                    //ignore file?
+                                }
+                            } else {
+                                if (stat.stats.isDirectory()) {
+                                    directories.push({ 'path': stat.path, 'linkPath': stat.path.replace(mainPath, ''), 'stats': stat.stats })
+                                    subDirectories.push(stat.path)
+                                } else if (stat.stats.isFile()) {
+                                    if (mime.lookup(stat.path)) {
+                                        files.push({ 'path': stat.path, 'linkPath': stat.path.replace(mainPath, ''), 'stats': stat.stats })
+                                    } else {
+                                        files.push({ 'path': stat.path, 'linkPath': stat.path.replace(mainPath, ''), 'stats': stat.stats })
+                                    }
                                 }
                             }
                         })
@@ -151,9 +275,10 @@ const statsDir = mainPath => {
                         data[file.linkPath] = file
                     })
                     directories.forEach((directory, directoryIndex) => {
-                        data[directory] = directory
+                        data[directory.linkPath] = directory
                     })
-                    resolve(data)
+                    exports.database = data
+                    resolve('finished')
                 }
             }, 1)
         }).catch(err => {
@@ -325,6 +450,7 @@ const decompressFile = path => {
         }
     })
 }
+exports.database = database
 exports.readDir = readDir
 exports.statsDir = statsDir
 exports.cipherDir = cipherDir
