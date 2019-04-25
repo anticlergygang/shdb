@@ -147,7 +147,7 @@ const readDir = mainPath => {
                     directories.forEach((directory, directoryIndex) => {
                         data[directory.linkPath || '/'] = directory
                     })
-                    exports.database = data
+
                     resolve('finished')
                 }
             }, 1)
@@ -277,7 +277,7 @@ const statsDir = mainPath => {
                     directories.forEach((directory, directoryIndex) => {
                         data[directory.linkPath || '/'] = directory
                     })
-                    exports.database = data
+
                     resolve('finished')
                 }
             }, 1)
