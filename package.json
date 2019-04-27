@@ -22,7 +22,6 @@
   },
   "homepage": "https://github.com/anticlergygang/shdb#readme",
   "dependencies": {
-    "lzma-native": "^4.0.3",
     "mime-types": "^2.1.17"
   }
 }
