@@ -36,7 +36,7 @@ const updateDatabase = mainPath => {
             let readyToRead = true
             statInfo.forEach((stat, statIndex) => {
                 if (exports.database[stat.path.replace(mainPath, '') || '/']) {
-                    if (exports.database[stat.path.replace(mainPath, '') || '/'].stats.mtimeMs !== stat.stats.mtimeMs || exports.database[stat.path.replace(mainPath, '') || '/'].stats.ctimeMs !== stat.stats.ctimeMs || exports.database[stat.path.replace(mainPath, '') || '/'].stats.atimeMs !== stat.stats.atimeMs || exports.database[stat.path.replace(mainPath, '') || '/'].stats.birthtimeMs !== stat.stats.birthtimeMs) {
+                    if (JSON.stringify(stat.stats) !== JSON.stringify(exports.database[stat.path.replace(mainPath, '') || '/'].stats)) {
                         if (stat.stats.isDirectory()) {
                             exports.database[stat.path.replace(mainPath, '') || '/'] = { 'path': stat.path, 'linkPath': stat.path.replace(mainPath, ''), 'stats': stat.stats, type: 'directory' }
                             subDirectories.push(stat.path)
@@ -47,9 +47,10 @@ const updateDatabase = mainPath => {
                                 exports.database[stat.path.replace(mainPath, '')] = { 'path': stat.path, 'linkPath': stat.path.replace(mainPath, ''), 'type': 'unknown', 'stats': stat.stats, 'data': fs.readFileSync(stat.path) }
                             }
                         }
-                        console.log(`update: ${stat.path}`)
                     } else {
-                        console.log(`do nothing to: ${stat.path}`)
+                        if (stat.stats.isDirectory()) {
+                            subDirectories.push(stat.path)
+                        }
                     }
                 } else {
                     if (stat.stats.isDirectory()) {
@@ -62,7 +63,6 @@ const updateDatabase = mainPath => {
                             exports.database[stat.path.replace(mainPath, '')] = { 'path': stat.path, 'linkPath': stat.path.replace(mainPath, ''), 'type': 'unknown', 'stats': stat.stats, 'data': fs.readFileSync(stat.path) }
                         }
                     }
-                    console.log(`update: ${stat.path}`)
                 }
             })
             let readInterval = setInterval(() => {
@@ -77,7 +77,7 @@ const updateDatabase = mainPath => {
                     }).then(statInfo => {
                         statInfo.forEach((stat, statIndex) => {
                             if (exports.database[stat.path.replace(mainPath, '') || '/']) {
-                                if (exports.database[stat.path.replace(mainPath, '') || '/'].stats.mtimeMs !== stat.stats.mtimeMs || exports.database[stat.path.replace(mainPath, '') || '/'].stats.ctimeMs !== stat.stats.ctimeMs || exports.database[stat.path.replace(mainPath, '') || '/'].stats.atimeMs !== stat.stats.atimeMs || exports.database[stat.path.replace(mainPath, '') || '/'].stats.birthtimeMs !== stat.stats.birthtimeMs) {
+                                if (JSON.stringify(stat.stats) !== JSON.stringify(exports.database[stat.path.replace(mainPath, '') || '/'].stats)) {
                                     if (stat.stats.isDirectory()) {
                                         exports.database[stat.path.replace(mainPath, '') || '/'] = { 'path': stat.path, 'linkPath': stat.path.replace(mainPath, ''), 'stats': stat.stats, type: 'directory' }
                                         subDirectories.push(stat.path)
@@ -88,9 +88,10 @@ const updateDatabase = mainPath => {
                                             exports.database[stat.path.replace(mainPath, '')] = { 'path': stat.path, 'linkPath': stat.path.replace(mainPath, ''), 'type': 'unknown', 'stats': stat.stats, 'data': fs.readFileSync(stat.path) }
                                         }
                                     }
-                                    console.log(`update: ${stat.path}`)
                                 } else {
-                                    console.log(`do nothing to: ${stat.path}`)
+                                    if (stat.stats.isDirectory()) {
+                                        subDirectories.push(stat.path)
+                                    }
                                 }
                             } else {
                                 if (stat.stats.isDirectory()) {
@@ -103,7 +104,6 @@ const updateDatabase = mainPath => {
                                         exports.database[stat.path.replace(mainPath, '')] = { 'path': stat.path, 'linkPath': stat.path.replace(mainPath, ''), 'type': 'unknown', 'stats': stat.stats, 'data': fs.readFileSync(stat.path) }
                                     }
                                 }
-                                console.log(`update: ${stat.path}`)
                             }
                         })
                         readyToRead = true
