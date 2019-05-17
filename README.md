@@ -1,6 +1,6 @@
 # shdb: setHacked database - a database app.
 
-find a dev here if you need help: https://discord.gg/RRHvYUe
+find a dev here if you need help: https://discord.gg/PQeH89P
 
 ```js
 let shdb = require('shdb')

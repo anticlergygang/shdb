@@ -23,6 +23,59 @@ const statPromise = path => {
         })
     })
 }
+const drillDirPromise = path => {
+    return new Promise((resolve, reject) => {
+        let recursiveReadReady = true
+        let subDirectories = []
+        let resolveDirectories = []
+        let subFiles = []
+        readDirPromise(path).then(initDir => {
+            let fileStats = []
+            initDir.files.forEach((file, fileIndex) => {
+                fileStats.push(statPromise(`${path}/${file}`))
+            })
+            return Promise.all(fileStats)
+        }).then(stats => {
+            stats.forEach((stat, statIndex) => {
+                if (stat.stats.isDirectory() === true) {
+                    subDirectories.push(stat.path)
+                    resolveDirectories.push(stat.path)
+                } else if (stat.stats.isFile() === true) {
+                    subFiles.push(stat.path)
+                }
+            })
+            let recursiveRead = setInterval(() => {
+                if (subDirectories.length <= 0) {
+                    clearInterval(recursiveRead)
+                    resolve({ files: subFiles, directories: resolveDirectories })
+                } else if (recursiveReadReady) {
+                    recursiveReadReady = false
+                    readDirPromise(subDirectories.pop()).then(dir => {
+                        let fileStats = []
+                        dir.files.forEach((file, fileIndex) => {
+                            fileStats.push(statPromise(`${dir.path}/${file}`))
+                        })
+                        return Promise.all(fileStats)
+                    }).then(stats => {
+                        stats.forEach((stat, statIndex) => {
+                            if (stat.stats.isDirectory() === true) {
+                                subDirectories.push(stat.path)
+                                resolveDirectories.push(stat.path)
+                            } else if (stat.stats.isFile() === true) {
+                                subFiles.push(stat.path)
+                            }
+                        })
+                        recursiveReadReady = true
+                    }).catch(err => {
+                        reject(err)
+                    })
+                }
+            }, 1)
+        }).catch(err => {
+            reject(err)
+        })
+    })
+}
 const updateDatabase = mainPath => {
     return new Promise((resolve, reject) => {
         readDirPromise(mainPath).then(dirInfo => {
@@ -121,5 +174,105 @@ const updateDatabase = mainPath => {
         })
     })
 }
+const cipherDir = (directory, password) => {
+    return new Promise((resolve, reject) => {
+        drillDirPromise(directory).then(files => {
+            let count = 0
+            // console.log(new Date().getTime())
+            files.files.forEach((fileKey, fileKeyIndex) => {
+                if (fileKey.indexOf('.DS_Store') === -1) {
+                    const cipher = crypto.createCipher('aes256', password)
+                    const input = fs.createReadStream(fileKey)
+                    const output = fs.createWriteStream(`${fileKey}.enc`)
+                    let stream = input.pipe(cipher).pipe(output)
+                    stream.on('finish', () => {
+                        fs.unlink(fileKey, () => {
+                            count = count + 1
+                            if (count >= files.files.length) {
+                                resolve('finished')
+                            }
+                        })
+                    })
+                } else {
+                    count = count + 1
+                    if (count >= files.files.length) {
+                        resolve('finished')
+                    }
+                }
+            })
+        }).catch(err => {
+            reject(err)
+        })
+    })
+}
+const decipherDir = (directory, password) => {
+    return new Promise((resolve, reject) => {
+        drillDirPromise(directory).then(files => {
+            let count = 0
+            files.files.forEach((fileKey, fileKeyIndex) => {
+                if (fileKey.indexOf('.DS_Store') === -1 && fileKey.indexOf('.enc') !== -1) {
+                    const decipher = crypto.createDecipher('aes256', password)
+                    const input = fs.createReadStream(fileKey)
+                    const output = fs.createWriteStream(fileKey.replace('.enc', ''))
+                    let stream = input.pipe(decipher).pipe(output)
+                    stream.on('finish', () => {
+                        fs.unlinkSync(fileKey)
+                        count = count + 1
+                        if (count >= files.files.length) {
+                            resolve('finished')
+                        }
+                    })
+                } else {
+                    count = count + 1
+                    if (count >= files.files.length) {
+                        resolve('finished')
+                    }
+                }
+            })
+        }).catch(err => {
+            reject(err)
+        })
+    })
+}
+const cipherFile = (path, password) => {
+    return new Promise((resolve, reject) => {
+        try {
+            const cipher = crypto.createCipher('aes256', password)
+            const input = fs.createReadStream(path)
+            const output = fs.createWriteStream(`${path}.enc`)
+            let stream = input.pipe(cipher).pipe(output)
+            stream.on('finish', () => {
+                fs.unlink(path, () => {
+                    resolve('finished')
+                })
+            })
+        } catch (err) {
+            reject(err)
+        }
+    })
+}
+const decipherFile = (path, password) => {
+    return new Promise((resolve, reject) => {
+        try {
+            const decipher = crypto.createDecipher('aes256', password)
+            const input = fs.createReadStream(path)
+            const output = fs.createWriteStream(path.replace('.enc', ''))
+            let stream = input.pipe(decipher).pipe(output)
+            stream.on('finish', () => {
+                fs.unlink(path, () => {
+                    resolve('finished')
+                })
+            })
+        } catch (err) {
+            reject(err)
+        }
+    })
+}
+
+exports.drillDirPromise = drillDirPromise
+exports.cipherDir = cipherDir
+exports.decipherDir = decipherDir
+exports.cipherFile = cipherFile
+exports.decipherFile = decipherFile
 exports.database = database
 exports.updateDatabase = updateDatabase
