@@ -174,24 +174,20 @@ const updateDatabase = mainPath => {
         })
     })
 }
-const cipherDir = (directory, password) => {
+const cipherDir = (directory, password, salt = 'salt', iv = Buffer.alloc(16, 0)) => {
     return new Promise((resolve, reject) => {
         drillDirPromise(directory).then(files => {
             let count = 0
             // console.log(new Date().getTime())
             files.files.forEach((fileKey, fileKeyIndex) => {
                 if (fileKey.indexOf('.DS_Store') === -1) {
-                    const cipher = crypto.createCipher('aes256', password)
-                    const input = fs.createReadStream(fileKey)
-                    const output = fs.createWriteStream(`${fileKey}.enc`)
-                    let stream = input.pipe(cipher).pipe(output)
-                    stream.on('finish', () => {
-                        fs.unlink(fileKey, () => {
-                            count = count + 1
-                            if (count >= files.files.length) {
-                                resolve('finished')
-                            }
-                        })
+                    cipherFile(fileKey, password, salt, iv).then(output => {
+                        count = count + 1
+                        if (count >= files.files.length) {
+                            resolve('finished')
+                        }
+                    }).catch(err => {
+                        reject(err)
                     })
                 } else {
                     count = count + 1
@@ -205,22 +201,19 @@ const cipherDir = (directory, password) => {
         })
     })
 }
-const decipherDir = (directory, password) => {
+const decipherDir = (directory, password, salt = 'salt', iv = Buffer.alloc(16, 0)) => {
     return new Promise((resolve, reject) => {
         drillDirPromise(directory).then(files => {
             let count = 0
             files.files.forEach((fileKey, fileKeyIndex) => {
                 if (fileKey.indexOf('.DS_Store') === -1 && fileKey.indexOf('.enc') !== -1) {
-                    const decipher = crypto.createDecipher('aes256', password)
-                    const input = fs.createReadStream(fileKey)
-                    const output = fs.createWriteStream(fileKey.replace('.enc', ''))
-                    let stream = input.pipe(decipher).pipe(output)
-                    stream.on('finish', () => {
-                        fs.unlinkSync(fileKey)
+                    decipherFile(fileKey, password, salt, iv).then(output => {
                         count = count + 1
                         if (count >= files.files.length) {
                             resolve('finished')
                         }
+                    }).catch(err => {
+                        reject(err)
                     })
                 } else {
                     count = count + 1
@@ -234,10 +227,11 @@ const decipherDir = (directory, password) => {
         })
     })
 }
-const cipherFile = (path, password) => {
+const cipherFile = (path, password, salt = 'salt', iv = Buffer.alloc(16, 0)) => {
     return new Promise((resolve, reject) => {
         try {
-            const cipher = crypto.createCipher('aes256', password)
+            const key = crypto.scryptSync(password, salt, 24);
+            const cipher = crypto.createCipheriv('aes-192-cbc', key, iv)
             const input = fs.createReadStream(path)
             const output = fs.createWriteStream(`${path}.enc`)
             let stream = input.pipe(cipher).pipe(output)
@@ -251,10 +245,11 @@ const cipherFile = (path, password) => {
         }
     })
 }
-const decipherFile = (path, password) => {
+const decipherFile = (path, password, salt = 'salt', iv = Buffer.alloc(16, 0)) => {
     return new Promise((resolve, reject) => {
         try {
-            const decipher = crypto.createDecipher('aes256', password)
+            const key = crypto.scryptSync(password, salt, 24);
+            const decipher = crypto.createDecipheriv('aes-192-cbc', key, iv)
             const input = fs.createReadStream(path)
             const output = fs.createWriteStream(path.replace('.enc', ''))
             let stream = input.pipe(decipher).pipe(output)
@@ -268,7 +263,6 @@ const decipherFile = (path, password) => {
         }
     })
 }
-
 exports.drillDirPromise = drillDirPromise
 exports.cipherDir = cipherDir
 exports.decipherDir = decipherDir
