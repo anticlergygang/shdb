@@ -118,10 +118,10 @@ const syncDatabasePromise = (path, pollRate = 2000, timeout = 10000) => new Prom
                     drillStat = JSON.stringify({ size: drillOutput.files[fileKey].stats.stats.size, mtime: drillOutput.files[fileKey].stats.stats.mtime })
                     dbStat = JSON.stringify({ size: exports.database.files[fileKey].stats.stats.size, mtime: exports.database.files[fileKey].stats.stats.mtime })
                     if (drillStat !== dbStat) {
-                        console.log(`file change detected: ${fileKey}`)
+                        // console.log(`file change detected: ${fileKey}`)
                         fs.readFile(fileKey, (err, data) => {
                             if (err) {
-                                console.log(`major error reading ${fileKey}`)
+                                // console.log(`major error reading ${fileKey}`)
                                 filesChecked += 1
                                 if (filesChecked === filesToCheck && dirsChecked === dirsToCheck) {
                                     clearTimeout(syncDatabasePromiseTimeout)
@@ -151,7 +151,7 @@ const syncDatabasePromise = (path, pollRate = 2000, timeout = 10000) => new Prom
                 } else {
                     fs.readFile(fileKey, (err, data) => {
                         if (err) {
-                            console.log(`major error reading ${fileKey}`)
+                            // console.log(`major error reading ${fileKey}`)
                             filesChecked += 1
                             if (filesChecked === filesToCheck && dirsChecked === dirsToCheck) {
                                 clearTimeout(syncDatabasePromiseTimeout)
@@ -166,7 +166,7 @@ const syncDatabasePromise = (path, pollRate = 2000, timeout = 10000) => new Prom
                                     resolve('syncFinished')
                                 }
                             } else {
-                                console.log(`new file detected: ${fileKey}`)
+                                // console.log(`new file detected: ${fileKey}`)
                                 exports.database.files[fileKey] = {
                                     stats: drillOutput.files[fileKey].stats,
                                     data: data,
@@ -186,7 +186,7 @@ const syncDatabasePromise = (path, pollRate = 2000, timeout = 10000) => new Prom
             directoryKeys.forEach((directoryKey, directoryKeyIndex) => {
                 if (Object.keys(exports.database.directories).indexOf(directoryKey) !== -1) {
                     if (JSON.stringify(drillOutput.directories[directoryKey].stats) !== JSON.stringify(exports.database.directories[directoryKey].stats)) {
-                        console.log(`directory change detected: ${directoryKey}`)
+                        // console.log(`directory change detected: ${directoryKey}`)
                         exports.database.directories[directoryKey] = {
                             stats: drillOutput.directories[directoryKey].stats
                         }
@@ -203,7 +203,7 @@ const syncDatabasePromise = (path, pollRate = 2000, timeout = 10000) => new Prom
                         }
                     }
                 } else {
-                    console.log(`new directory detected: ${directoryKey}`)
+                    // console.log(`new directory detected: ${directoryKey}`)
                     exports.database.directories[directoryKey] = {
                         stats: drillOutput.directories[directoryKey].stats
                     }
@@ -217,7 +217,6 @@ const syncDatabasePromise = (path, pollRate = 2000, timeout = 10000) => new Prom
             setTimeout(() => {
                 syncDatabasePromise(path).then(finish => {
                     // console.log(finish)
-                    console.log('sync')
                 }).catch(err => {
                     reject(err)
                 })
