@@ -231,6 +231,6 @@ const syncDatabasePromise = (path, pollRate = 2000, timeout = 10000) => new Prom
     }
 })
 
-exports.database = {}
+exports.database = { files: {}, directories: {} }
 exports.drillDirPromise = drillDirPromise
 exports.syncDatabasePromise = syncDatabasePromise
