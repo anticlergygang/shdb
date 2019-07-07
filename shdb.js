@@ -101,7 +101,7 @@ const drillDirPromise = (path, timeout = 10000) => new Promise((resolve, reject)
         reject(`major drillDirPromise error \n${util.inspect(err)}`)
     }
 })
-const syncDatabasePromise = (path, pollRate = 2000, timeout = 10000) => new Promise((resolve, reject) => {
+const syncDatabasePromise = (path, timeout = 10000) => new Promise((resolve, reject) => {
     try {
         let syncDatabasePromiseTimeout = setTimeout(() => {
             reject('minor syncDatabasePromise timeout')
@@ -210,17 +210,10 @@ const syncDatabasePromise = (path, pollRate = 2000, timeout = 10000) => new Prom
                     dirsChecked += 1
                     if (filesChecked === filesToCheck && dirsChecked === dirsToCheck) {
                         clearTimeout(syncDatabasePromiseTimeout)
-                        resolve(`init sync finished, sync pollRate: ${pollRate}`)
+                        resolve(`init sync finished`)
                     }
                 }
             })
-            setTimeout(() => {
-                syncDatabasePromise(path).then(finish => {
-                    // console.log(finish)
-                }).catch(err => {
-                    reject(err)
-                })
-            }, pollRate)
         }).catch(err => {
             clearTimeout(syncDatabasePromiseTimeout)
             reject(err)
