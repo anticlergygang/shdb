@@ -1,1 +1,1 @@
-Visit https://discord.gg/RRHvYUe and `@setHacked developer`
+Visit https://discord.gg/p46mJWm

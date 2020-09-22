@@ -1,7 +1,7 @@
 {
   "name": "shdb",
   "version": "2.0.1",
-  "description": "shdb",
+  "description": "a database app",
   "main": "shdb.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
@@ -12,16 +12,18 @@
   },
   "keywords": [
     "shdb",
-    "sethacked",
     "database"
   ],
-  "author": "antiClergy",
+  "author": "anti",
   "license": "GPL-3.0",
   "bugs": {
     "url": "https://github.com/anticlergygang/shdb/issues"
   },
   "homepage": "https://github.com/anticlergygang/shdb#readme",
   "dependencies": {
-    "mime-types": "^2.1.17"
-  }
+    "crypto": "^1.0.1",
+    "fs": "0.0.1-security",
+    "path": "^0.12.7"
+  },
+  "devDependencies": {}
 }
