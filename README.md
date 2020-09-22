@@ -47,8 +47,15 @@ shdb.syncDirToDatabase('/path/to/database/directory').then(success => { // init 
     console.log(err)
 })
 
+//folderLock example
 
-shdb.lockDir('C:\\Users\\jason\\Desktop\\test', 'password').then(success => {
+let shdb = require('shdb')
+shdb.lockDir('C:\\Users\\anti\\Desktop\\test', 'password').then(success => {
+	console.log(success)                    
+}).catch(err => {
+	console.log(err)
+})
+shdb.unLockDir('C:\\Users\\anti\\Desktop\\test', 'password').then(success => {
 	console.log(success)                    
 }).catch(err => {
 	console.log(err)
