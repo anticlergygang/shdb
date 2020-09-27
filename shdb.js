@@ -2,6 +2,7 @@ const crypto = require('crypto')
 const fs = require('fs')
 const fsp = require('fs').promises
 const path = require('path')
+const mime = require('mime-types')
 let database = {
     files: {}
 }
@@ -18,7 +19,8 @@ const syncDirToDatabase = async (directoryPath, filelist = []) => {
             const stats = await fileHandle.stat()
             database.files[filepath] = {
                 "data": data,
-                "stats": stats
+                "stats": stats,
+                "type": mime.lookup(filepath)
             }
             fileHandle.close()
         }

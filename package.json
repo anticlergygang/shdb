@@ -23,6 +23,7 @@
   "dependencies": {
     "crypto": "^1.0.1",
     "fs": "0.0.1-security",
+    "mime-types": "^2.1.27",
     "path": "^0.12.7"
   },
   "devDependencies": {}
